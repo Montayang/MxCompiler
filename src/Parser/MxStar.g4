@@ -1,110 +1,121 @@
 grammar MxStar;
 
-program: classDef* mainFn;
+//Parser
 
-mainFn: 'int' 'main()' suite EOF;
-
-varDef : type Identifier ('=' expression)? ';';
-classDef : 'struct' Identifier '{' varDef* '}'';';
+program : (subProgram)* EOF;
 
 suite : '{' statement* '}';
 
+subProgram : varDef | classDef | funcDef;
+
+varDef : varType IDENTIFIER ('=' expression)? (',' IDENTIFIER ('=' expression)?)* ';';
+
+classDef : CLASS IDENTIFIER '{' (funcDef | varDef)* '}' ';' ;
+
+funcDef : funcType? IDENTIFIER '(' parList? ')' suite ;
+
+funcType: VOID | varType ;
+
+varType
+    : varType '['']'
+    | baseType
+;
+
+baseType
+    : INT
+    | BOOL
+    | STRING
+    | IDENTIFIER
+;
+
+parList : varType IDENTIFIER (',' varType IDENTIFIER)* ;
+
 statement
-    : suite                                                 #block
-    | varDef                                                #vardefStmt
-    | If '(' expression ')' trueStmt=statement
-        (Else falseStmt=statement)?                         #ifStmt
-    | Return expression? ';'                                #returnStmt
-    | expression ';'                                        #pureExprStmt
-    | ';'                                                   #emptyStmt
+    : suite                                                      #block
+    | varDef                                                     #vardefStmt
+    | IF '(' expression ')' thenStmt=statement (ELSE elseStmt=statement)?  #ifStmt
+    | FOR '(' initExp = expression? ';' condExp = expression? ';' stepExp = expression? ')' statement  #forStmt
+    | WHILE '(' expression ')' statement                         #whileStmt
+    | RETURN expression? ';'                                     #returnStmt
+    | CONTINUE ';'                                               #continueStmt
+    | BREAK ';'                                                  #breakStmt
+    | expression ';'                                             #pureExprStmt
+    | ';'                                                        #emptyStmt
     ;
 
 expression
-    : primary                                               #atomExpr
-    | expression op=('+' | '-') expression                  #binaryExpr
-    | expression op=('==' | '!=' ) expression               #binaryExpr
-    | <assoc=right> expression '=' expression               #assignExpr
+    : primary                                                    #atomExpr
+    | <assoc=right> NEW newType                                  #newExpr
+    | expression '.' IDENTIFIER                                  #memberAcc
+    | expression '(' exprList? ')'                               #funccal
+    | arr=expression '[' index = expression ']'                  #arraydefExpr
+    | expression op=('++' | '--')                                #selfExpr
+    | <assoc=right> op=('++' | '--') expression                  #unaryExpr
+    | <assoc=right> op=('!' | '~') expression                    #unaryExpr
+    | <assoc=right> op=('+' | '-') expression                    #unaryExpr
+    | exprl=expression op=('*' | '/' | '%') exprr=expression     #binaryExpr
+    | exprl=expression op=('+' | '-') exprr=expression           #binaryExpr
+    | exprl=expression op=('<<' | '>>') exprr=expression         #binaryExpr
+    | exprl=expression op=('>' | '<' | '>=' | '<=' | '==' | '!=' ) exprr=expression               #binaryExpr
+    | exprl=expression op='&' exprr=expression                   #binaryExpr
+    | exprl=expression op='|' exprr=expression                   #binaryExpr
+    | exprl=expression op='^' exprr=expression                   #binaryExpr
+    | exprl=expression op='&&' exprr=expression                  #binaryExpr
+    | exprl=expression op='||' exprr=expression                  #binaryExpr
+    | <assoc=right> exprl=expression '=' exprr=expression        #assignExpr
+    | '[&]' ('('parList?')')? '->' suite '('expression (',' expression)*')' #lambdaExpr
     ;
 
+newType
+    : baseType ('[' expression ']')*('['']')+('[' expression ']')+('[' expression? ']')* #newErrorType
+    | baseType ('[' expression? ']')+                            #newArrayType
+    | baseType ('(' ')')?                                        #newBaseType
+;
+
+exprList : expression (',' expression)* ;
+
 primary
-    : '(' expression ')'
-    | Identifier
+    : '('expression')'
+    | IDENTIFIER
+    | THIS
     | literal
     ;
 
 literal
-    : DecimalInteger
+    : INTERGER_CONST
+    | STRING_CONST
+    | NULL_CONST
+    | BOOL_CONST
     ;
 
-type : Int | Identifier;
+//Lexer
 
-Int : 'int';
-If : 'if';
-Else : 'else';
-Return : 'return';
-Struct: 'struct';
+INT : 'int';
+BOOL : 'bool';
+STRING : 'string';
+NULL : 'null';
+TRUE : 'true';
+FALSE : 'false';
+IF : 'if';
+ELSE : 'else';
+FOR : 'for';
+WHILE : 'while';
+RETURN : 'return';
+CONTINUE : 'continue';
+BREAK : 'break';
+CLASS : 'class';
+VOID : 'void';
+THIS : 'this';
+NEW : 'new';
 
-LeftParen : '(';
-RightParen : ')';
-LeftBracket : '[';
-RightBracket : ']';
-LeftBrace : '{';
-RightBrace : '}';
+INTERGER_CONST: '0' | [1-9][0-9]*;
+BOOL_CONST: TRUE | FALSE;
+STRING_CONST: '"' ('\\n' | '\\\\' | '\\"' | .)*? '"';
+NULL_CONST: NULL;
 
-Less : '<';
-LessEqual : '<=';
-Greater : '>';
-GreaterEqual : '>=';
-LeftShift : '<<';
-RightShift : '>>';
+IDENTIFIER : [a-zA-Z] [a-zA-Z0-9_]* ;
+WHITESPACE : [ \t]+ -> skip ;
+NEWLINE : ('\r' ? '\n' | '\r') -> skip ;
 
-Plus : '+';
-Minus : '-';
-
-And : '&';
-Or : '|';
-AndAnd : '&&';
-OrOr : '||';
-Caret : '^';
-Not : '!';
-Tilde : '~';
-
-Question : '?';
-Colon : ':';
-Semi : ';';
-Comma : ',';
-
-Assign : '=';
-Equal : '==';
-NotEqual : '!=';
-
-Identifier
-    : [a-zA-Z] [a-zA-Z_0-9]*
-    ;
-
-DecimalInteger
-    : [1-9] [0-9]*
-    | '0'
-    ;
-
-Whitespace
-    :   [ \t]+
-        -> skip
-    ;
-
-Newline
-    :   (   '\r' '\n'?
-        |   '\n'
-        )
-        -> skip
-    ;
-
-BlockComment
-    :   '/*' .*? '*/'
-        -> skip
-    ;
-
-LineComment
-    :   '//' ~[\r\n]*
-        -> skip
-    ;
+BLOCK_COMMENT : '/*' .*? '*/' -> skip ;
+LINE_COMMENT : '//' ~[\r\n]* -> skip ;
