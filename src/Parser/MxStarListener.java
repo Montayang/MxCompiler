@@ -18,126 +18,6 @@ public interface MxStarListener extends ParseTreeListener {
 	 */
 	void exitProgram(MxStarParser.ProgramContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxStarParser#define}.
-	 * @param ctx the parse tree
-	 */
-	void enterDefine(MxStarParser.DefineContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxStarParser#define}.
-	 * @param ctx the parse tree
-	 */
-	void exitDefine(MxStarParser.DefineContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxStarParser#class_def}.
-	 * @param ctx the parse tree
-	 */
-	void enterClass_def(MxStarParser.Class_defContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxStarParser#class_def}.
-	 * @param ctx the parse tree
-	 */
-	void exitClass_def(MxStarParser.Class_defContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxStarParser#constructor_def}.
-	 * @param ctx the parse tree
-	 */
-	void enterConstructor_def(MxStarParser.Constructor_defContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxStarParser#constructor_def}.
-	 * @param ctx the parse tree
-	 */
-	void exitConstructor_def(MxStarParser.Constructor_defContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxStarParser#var_def_stmt}.
-	 * @param ctx the parse tree
-	 */
-	void enterVar_def_stmt(MxStarParser.Var_def_stmtContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxStarParser#var_def_stmt}.
-	 * @param ctx the parse tree
-	 */
-	void exitVar_def_stmt(MxStarParser.Var_def_stmtContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxStarParser#var_def}.
-	 * @param ctx the parse tree
-	 */
-	void enterVar_def(MxStarParser.Var_defContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxStarParser#var_def}.
-	 * @param ctx the parse tree
-	 */
-	void exitVar_def(MxStarParser.Var_defContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxStarParser#var_def_arg}.
-	 * @param ctx the parse tree
-	 */
-	void enterVar_def_arg(MxStarParser.Var_def_argContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxStarParser#var_def_arg}.
-	 * @param ctx the parse tree
-	 */
-	void exitVar_def_arg(MxStarParser.Var_def_argContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxStarParser#func_def}.
-	 * @param ctx the parse tree
-	 */
-	void enterFunc_def(MxStarParser.Func_defContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxStarParser#func_def}.
-	 * @param ctx the parse tree
-	 */
-	void exitFunc_def(MxStarParser.Func_defContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxStarParser#basic_type}.
-	 * @param ctx the parse tree
-	 */
-	void enterBasic_type(MxStarParser.Basic_typeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxStarParser#basic_type}.
-	 * @param ctx the parse tree
-	 */
-	void exitBasic_type(MxStarParser.Basic_typeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxStarParser#type}.
-	 * @param ctx the parse tree
-	 */
-	void enterType(MxStarParser.TypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxStarParser#type}.
-	 * @param ctx the parse tree
-	 */
-	void exitType(MxStarParser.TypeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxStarParser#func_type}.
-	 * @param ctx the parse tree
-	 */
-	void enterFunc_type(MxStarParser.Func_typeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxStarParser#func_type}.
-	 * @param ctx the parse tree
-	 */
-	void exitFunc_type(MxStarParser.Func_typeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxStarParser#parameter_list}.
-	 * @param ctx the parse tree
-	 */
-	void enterParameter_list(MxStarParser.Parameter_listContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxStarParser#parameter_list}.
-	 * @param ctx the parse tree
-	 */
-	void exitParameter_list(MxStarParser.Parameter_listContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxStarParser#parameter}.
-	 * @param ctx the parse tree
-	 */
-	void enterParameter(MxStarParser.ParameterContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxStarParser#parameter}.
-	 * @param ctx the parse tree
-	 */
-	void exitParameter(MxStarParser.ParameterContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link MxStarParser#suite}.
 	 * @param ctx the parse tree
 	 */
@@ -148,113 +28,435 @@ public interface MxStarListener extends ParseTreeListener {
 	 */
 	void exitSuite(MxStarParser.SuiteContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxStarParser#stmt}.
+	 * Enter a parse tree produced by {@link MxStarParser#subProgram}.
 	 * @param ctx the parse tree
 	 */
-	void enterStmt(MxStarParser.StmtContext ctx);
+	void enterSubProgram(MxStarParser.SubProgramContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MxStarParser#stmt}.
+	 * Exit a parse tree produced by {@link MxStarParser#subProgram}.
 	 * @param ctx the parse tree
 	 */
-	void exitStmt(MxStarParser.StmtContext ctx);
+	void exitSubProgram(MxStarParser.SubProgramContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxStarParser#if_stmt}.
+	 * Enter a parse tree produced by {@link MxStarParser#varDef}.
 	 * @param ctx the parse tree
 	 */
-	void enterIf_stmt(MxStarParser.If_stmtContext ctx);
+	void enterVarDef(MxStarParser.VarDefContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MxStarParser#if_stmt}.
+	 * Exit a parse tree produced by {@link MxStarParser#varDef}.
 	 * @param ctx the parse tree
 	 */
-	void exitIf_stmt(MxStarParser.If_stmtContext ctx);
+	void exitVarDef(MxStarParser.VarDefContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxStarParser#loop_stmt}.
+	 * Enter a parse tree produced by {@link MxStarParser#classDef}.
 	 * @param ctx the parse tree
 	 */
-	void enterLoop_stmt(MxStarParser.Loop_stmtContext ctx);
+	void enterClassDef(MxStarParser.ClassDefContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MxStarParser#loop_stmt}.
+	 * Exit a parse tree produced by {@link MxStarParser#classDef}.
 	 * @param ctx the parse tree
 	 */
-	void exitLoop_stmt(MxStarParser.Loop_stmtContext ctx);
+	void exitClassDef(MxStarParser.ClassDefContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxStarParser#while_stmt}.
+	 * Enter a parse tree produced by {@link MxStarParser#funcDef}.
 	 * @param ctx the parse tree
 	 */
-	void enterWhile_stmt(MxStarParser.While_stmtContext ctx);
+	void enterFuncDef(MxStarParser.FuncDefContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MxStarParser#while_stmt}.
+	 * Exit a parse tree produced by {@link MxStarParser#funcDef}.
 	 * @param ctx the parse tree
 	 */
-	void exitWhile_stmt(MxStarParser.While_stmtContext ctx);
+	void exitFuncDef(MxStarParser.FuncDefContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxStarParser#for_stmt}.
+	 * Enter a parse tree produced by {@link MxStarParser#funcType}.
 	 * @param ctx the parse tree
 	 */
-	void enterFor_stmt(MxStarParser.For_stmtContext ctx);
+	void enterFuncType(MxStarParser.FuncTypeContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MxStarParser#for_stmt}.
+	 * Exit a parse tree produced by {@link MxStarParser#funcType}.
 	 * @param ctx the parse tree
 	 */
-	void exitFor_stmt(MxStarParser.For_stmtContext ctx);
+	void exitFuncType(MxStarParser.FuncTypeContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxStarParser#flow_stmt}.
+	 * Enter a parse tree produced by {@link MxStarParser#varType}.
 	 * @param ctx the parse tree
 	 */
-	void enterFlow_stmt(MxStarParser.Flow_stmtContext ctx);
+	void enterVarType(MxStarParser.VarTypeContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MxStarParser#flow_stmt}.
+	 * Exit a parse tree produced by {@link MxStarParser#varType}.
 	 * @param ctx the parse tree
 	 */
-	void exitFlow_stmt(MxStarParser.Flow_stmtContext ctx);
+	void exitVarType(MxStarParser.VarTypeContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxStarParser#expr_stmt}.
+	 * Enter a parse tree produced by {@link MxStarParser#baseType}.
 	 * @param ctx the parse tree
 	 */
-	void enterExpr_stmt(MxStarParser.Expr_stmtContext ctx);
+	void enterBaseType(MxStarParser.BaseTypeContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MxStarParser#expr_stmt}.
+	 * Exit a parse tree produced by {@link MxStarParser#baseType}.
 	 * @param ctx the parse tree
 	 */
-	void exitExpr_stmt(MxStarParser.Expr_stmtContext ctx);
+	void exitBaseType(MxStarParser.BaseTypeContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxStarParser#expr}.
+	 * Enter a parse tree produced by {@link MxStarParser#parList}.
 	 * @param ctx the parse tree
 	 */
-	void enterExpr(MxStarParser.ExprContext ctx);
+	void enterParList(MxStarParser.ParListContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MxStarParser#expr}.
+	 * Exit a parse tree produced by {@link MxStarParser#parList}.
 	 * @param ctx the parse tree
 	 */
-	void exitExpr(MxStarParser.ExprContext ctx);
+	void exitParList(MxStarParser.ParListContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxStarParser#arg_list}.
+	 * Enter a parse tree produced by {@link MxStarParser#singleVarDef}.
 	 * @param ctx the parse tree
 	 */
-	void enterArg_list(MxStarParser.Arg_listContext ctx);
+	void enterSingleVarDef(MxStarParser.SingleVarDefContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MxStarParser#arg_list}.
+	 * Exit a parse tree produced by {@link MxStarParser#singleVarDef}.
 	 * @param ctx the parse tree
 	 */
-	void exitArg_list(MxStarParser.Arg_listContext ctx);
+	void exitSingleVarDef(MxStarParser.SingleVarDefContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxStarParser#creator}.
+	 * Enter a parse tree produced by {@link MxStarParser#singleInit}.
 	 * @param ctx the parse tree
 	 */
-	void enterCreator(MxStarParser.CreatorContext ctx);
+	void enterSingleInit(MxStarParser.SingleInitContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MxStarParser#creator}.
+	 * Exit a parse tree produced by {@link MxStarParser#singleInit}.
 	 * @param ctx the parse tree
 	 */
-	void exitCreator(MxStarParser.CreatorContext ctx);
+	void exitSingleInit(MxStarParser.SingleInitContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxStarParser#lambda_stmt}.
+	 * Enter a parse tree produced by the {@code block}
+	 * labeled alternative in {@link MxStarParser#statement}.
 	 * @param ctx the parse tree
 	 */
-	void enterLambda_stmt(MxStarParser.Lambda_stmtContext ctx);
+	void enterBlock(MxStarParser.BlockContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MxStarParser#lambda_stmt}.
+	 * Exit a parse tree produced by the {@code block}
+	 * labeled alternative in {@link MxStarParser#statement}.
 	 * @param ctx the parse tree
 	 */
-	void exitLambda_stmt(MxStarParser.Lambda_stmtContext ctx);
+	void exitBlock(MxStarParser.BlockContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code vardefStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterVardefStmt(MxStarParser.VardefStmtContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code vardefStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitVardefStmt(MxStarParser.VardefStmtContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ifStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfStmt(MxStarParser.IfStmtContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ifStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfStmt(MxStarParser.IfStmtContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code forStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterForStmt(MxStarParser.ForStmtContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code forStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitForStmt(MxStarParser.ForStmtContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code whileStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterWhileStmt(MxStarParser.WhileStmtContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code whileStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitWhileStmt(MxStarParser.WhileStmtContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code returnStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturnStmt(MxStarParser.ReturnStmtContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code returnStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturnStmt(MxStarParser.ReturnStmtContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code continueStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterContinueStmt(MxStarParser.ContinueStmtContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code continueStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitContinueStmt(MxStarParser.ContinueStmtContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code breakStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterBreakStmt(MxStarParser.BreakStmtContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code breakStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitBreakStmt(MxStarParser.BreakStmtContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code pureExprStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterPureExprStmt(MxStarParser.PureExprStmtContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code pureExprStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitPureExprStmt(MxStarParser.PureExprStmtContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code emptyStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterEmptyStmt(MxStarParser.EmptyStmtContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code emptyStmt}
+	 * labeled alternative in {@link MxStarParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitEmptyStmt(MxStarParser.EmptyStmtContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code newExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterNewExpr(MxStarParser.NewExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code newExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitNewExpr(MxStarParser.NewExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code memberAccExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterMemberAccExpr(MxStarParser.MemberAccExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code memberAccExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitMemberAccExpr(MxStarParser.MemberAccExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code thisExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterThisExpr(MxStarParser.ThisExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code thisExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitThisExpr(MxStarParser.ThisExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code selfExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterSelfExpr(MxStarParser.SelfExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code selfExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitSelfExpr(MxStarParser.SelfExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code binaryExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBinaryExpr(MxStarParser.BinaryExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code binaryExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBinaryExpr(MxStarParser.BinaryExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code funcCallExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterFuncCallExpr(MxStarParser.FuncCallExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code funcCallExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitFuncCallExpr(MxStarParser.FuncCallExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code subExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterSubExpr(MxStarParser.SubExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code subExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitSubExpr(MxStarParser.SubExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code arrayAccExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayAccExpr(MxStarParser.ArrayAccExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code arrayAccExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayAccExpr(MxStarParser.ArrayAccExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code unaryExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterUnaryExpr(MxStarParser.UnaryExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code unaryExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitUnaryExpr(MxStarParser.UnaryExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code lambdaExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterLambdaExpr(MxStarParser.LambdaExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code lambdaExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitLambdaExpr(MxStarParser.LambdaExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code assignExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssignExpr(MxStarParser.AssignExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code assignExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssignExpr(MxStarParser.AssignExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code idExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterIdExpr(MxStarParser.IdExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code idExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitIdExpr(MxStarParser.IdExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code constExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstExpr(MxStarParser.ConstExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code constExpr}
+	 * labeled alternative in {@link MxStarParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstExpr(MxStarParser.ConstExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code newErrorType}
+	 * labeled alternative in {@link MxStarParser#newType}.
+	 * @param ctx the parse tree
+	 */
+	void enterNewErrorType(MxStarParser.NewErrorTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code newErrorType}
+	 * labeled alternative in {@link MxStarParser#newType}.
+	 * @param ctx the parse tree
+	 */
+	void exitNewErrorType(MxStarParser.NewErrorTypeContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code newArrayType}
+	 * labeled alternative in {@link MxStarParser#newType}.
+	 * @param ctx the parse tree
+	 */
+	void enterNewArrayType(MxStarParser.NewArrayTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code newArrayType}
+	 * labeled alternative in {@link MxStarParser#newType}.
+	 * @param ctx the parse tree
+	 */
+	void exitNewArrayType(MxStarParser.NewArrayTypeContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code newBaseType}
+	 * labeled alternative in {@link MxStarParser#newType}.
+	 * @param ctx the parse tree
+	 */
+	void enterNewBaseType(MxStarParser.NewBaseTypeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code newBaseType}
+	 * labeled alternative in {@link MxStarParser#newType}.
+	 * @param ctx the parse tree
+	 */
+	void exitNewBaseType(MxStarParser.NewBaseTypeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MxStarParser#exprList}.
+	 * @param ctx the parse tree
+	 */
+	void enterExprList(MxStarParser.ExprListContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MxStarParser#exprList}.
+	 * @param ctx the parse tree
+	 */
+	void exitExprList(MxStarParser.ExprListContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MxStarParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void enterLiteral(MxStarParser.LiteralContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MxStarParser#literal}.
+	 * @param ctx the parse tree
+	 */
+	void exitLiteral(MxStarParser.LiteralContext ctx);
 }

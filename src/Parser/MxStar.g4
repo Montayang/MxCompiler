@@ -8,7 +8,7 @@ suite : '{' statement* '}';
 
 subProgram : varDef | classDef | funcDef;
 
-varDef : varType IDENTIFIER ('=' expression)? (',' IDENTIFIER ('=' expression)?)* ';';
+varDef : varType singleInit (',' singleInit)* ';';
 
 classDef : CLASS IDENTIFIER '{' (funcDef | varDef)* '}' ';' ;
 
@@ -28,13 +28,17 @@ baseType
     | IDENTIFIER
 ;
 
-parList : varType IDENTIFIER (',' varType IDENTIFIER)* ;
+parList : singleVarDef (',' singleVarDef)* ;
+
+singleVarDef : varType IDENTIFIER;
+
+singleInit : IDENTIFIER ('=' expression)?;
 
 statement
     : suite                                                      #block
     | varDef                                                     #vardefStmt
     | IF '(' expression ')' thenStmt=statement (ELSE elseStmt=statement)?  #ifStmt
-    | FOR '(' initExp = expression? ';' condExp = expression? ';' stepExp = expression? ')' statement  #forStmt
+    | FOR '(' initExpr = expression? ';' condExpr = expression? ';' stepExpr = expression? ')' statement  #forStmt
     | WHILE '(' expression ')' statement                         #whileStmt
     | RETURN expression? ';'                                     #returnStmt
     | CONTINUE ';'                                               #continueStmt
@@ -44,25 +48,28 @@ statement
     ;
 
 expression
-    : primary                                                    #atomExpr
+    : '('expression')'                                           #subExpr
+    | IDENTIFIER                                                 #idExpr
+    | THIS                                                       #thisExpr
+    | literal                                                    #constExpr
     | <assoc=right> NEW newType                                  #newExpr
-    | expression '.' IDENTIFIER                                  #memberAcc
-    | expression '(' exprList? ')'                               #funccal
-    | arr=expression '[' index = expression ']'                  #arraydefExpr
+    | expression '.' IDENTIFIER                                  #memberAccExpr
+    | expression '(' exprList? ')'                               #funcCallExpr
+    | array=expression '[' index = expression ']'                #arrayAccExpr
     | expression op=('++' | '--')                                #selfExpr
     | <assoc=right> op=('++' | '--') expression                  #unaryExpr
     | <assoc=right> op=('!' | '~') expression                    #unaryExpr
     | <assoc=right> op=('+' | '-') expression                    #unaryExpr
-    | exprl=expression op=('*' | '/' | '%') exprr=expression     #binaryExpr
-    | exprl=expression op=('+' | '-') exprr=expression           #binaryExpr
-    | exprl=expression op=('<<' | '>>') exprr=expression         #binaryExpr
-    | exprl=expression op=('>' | '<' | '>=' | '<=' | '==' | '!=' ) exprr=expression               #binaryExpr
-    | exprl=expression op='&' exprr=expression                   #binaryExpr
-    | exprl=expression op='|' exprr=expression                   #binaryExpr
-    | exprl=expression op='^' exprr=expression                   #binaryExpr
-    | exprl=expression op='&&' exprr=expression                  #binaryExpr
-    | exprl=expression op='||' exprr=expression                  #binaryExpr
-    | <assoc=right> exprl=expression '=' exprr=expression        #assignExpr
+    | exprL=expression op=('*' | '/' | '%') exprR=expression     #binaryExpr
+    | exprL=expression op=('+' | '-') exprR=expression           #binaryExpr
+    | exprL=expression op=('<<' | '>>') exprR=expression         #binaryExpr
+    | exprL=expression op=('>' | '<' | '>=' | '<=' | '==' | '!=' ) exprR=expression               #binaryExpr
+    | exprL=expression op='&' exprR=expression                   #binaryExpr
+    | exprL=expression op='|' exprR=expression                   #binaryExpr
+    | exprL=expression op='^' exprR=expression                   #binaryExpr
+    | exprL=expression op='&&' exprR=expression                  #binaryExpr
+    | exprL=expression op='||' exprR=expression                  #binaryExpr
+    | <assoc=right> exprL=expression '=' exprR=expression        #assignExpr
     | '[&]' ('('parList?')')? '->' suite '('expression (',' expression)*')' #lambdaExpr
     ;
 
@@ -74,17 +81,10 @@ newType
 
 exprList : expression (',' expression)* ;
 
-primary
-    : '('expression')'
-    | IDENTIFIER
-    | THIS
-    | literal
-    ;
-
 literal
-    : INTERGER_CONST
+    : NULL_CONST
+    | INTERGER_CONST
     | STRING_CONST
-    | NULL_CONST
     | BOOL_CONST
     ;
 
