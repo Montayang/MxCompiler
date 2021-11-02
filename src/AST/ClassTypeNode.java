@@ -8,7 +8,5 @@ public class ClassTypeNode extends TypeNode {
     }
 
     @Override
-    public void accept(ASTVisitor visitor) {
-        visitor.visit(this);
-    }
+    public void accept(ASTVisitor visitor) {}
 }

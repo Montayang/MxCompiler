@@ -17,8 +17,8 @@ funcDef : funcType? IDENTIFIER '(' parList? ')' suite ;
 funcType: VOID | varType ;
 
 varType
-    : varType '['']'
-    | baseType
+    : varType '['']'           #arrayType
+    | baseType                 #baseVarType
 ;
 
 baseType
@@ -38,7 +38,7 @@ statement
     : suite                                                      #block
     | varDef                                                     #vardefStmt
     | IF '(' expression ')' thenStmt=statement (ELSE elseStmt=statement)?  #ifStmt
-    | FOR '(' initExpr = expression? ';' condExpr = expression? ';' stepExpr = expression? ')' statement  #forStmt
+    | FOR '(' (initDef =varDef | initExpr = expression)? ';' condExpr = expression? ';' stepExpr = expression? ')' statement  #forStmt
     | WHILE '(' expression ')' statement                         #whileStmt
     | RETURN expression? ';'                                     #returnStmt
     | CONTINUE ';'                                               #continueStmt

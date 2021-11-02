@@ -13,8 +13,8 @@ abstract public class TypeNode extends ASTNode {
     }
 
     public boolean equals(Object object) {
-        if (object instanceof TypeNode) return Objects.equals(Typename, ((TypeNode) object).Typename);
-        return false;
+        if (!(object instanceof TypeNode)) return false;
+        return Objects.equals(Typename, ((TypeNode) object).Typename);
     }
 
 }

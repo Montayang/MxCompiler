@@ -53,11 +53,19 @@ public interface MxStarVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFuncType(MxStarParser.FuncTypeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MxStarParser#varType}.
+	 * Visit a parse tree produced by the {@code baseVarType}
+	 * labeled alternative in {@link MxStarParser#varType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitVarType(MxStarParser.VarTypeContext ctx);
+	T visitBaseVarType(MxStarParser.BaseVarTypeContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code arrayType}
+	 * labeled alternative in {@link MxStarParser#varType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayType(MxStarParser.ArrayTypeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxStarParser#baseType}.
 	 * @param ctx the parse tree

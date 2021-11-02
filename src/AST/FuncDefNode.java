@@ -9,6 +9,7 @@ public class FuncDefNode extends ASTNode {
     public String funcName;
     public ArrayList<VarDefNode> parList;
     public BlockStmtNode funcBody;
+    public boolean hasReturn;
 
     public FuncDefNode(TypeNode type,String name,ArrayList<VarDefNode> par,BlockStmtNode body,position pos) {
         super(pos);
@@ -16,6 +17,7 @@ public class FuncDefNode extends ASTNode {
         this.funcName=name;
         this.parList=par;
         this.funcBody=body;
+        this.hasReturn=false;
     }
 
     @Override

@@ -3,9 +3,10 @@ package AST;
 import Util.position;
 
 public class ForStmtNode extends StmtNode {
-    public ExprNode initExpr,condExpr,stepExpr;
+    public StmtNode initExpr;
+    public ExprNode condExpr,stepExpr;
     public StmtNode forBody;
-    public ForStmtNode(ExprNode initExpr,ExprNode condExpr,ExprNode stepExpr,StmtNode body,position pos) {
+    public ForStmtNode(StmtNode initExpr,ExprNode condExpr,ExprNode stepExpr,StmtNode body,position pos) {
         super(pos);
         this.initExpr=initExpr;
         this.condExpr=condExpr;
