@@ -8,6 +8,7 @@ public class StringConstExprNode extends ExprNode {
     public StringConstExprNode(String val, position pos) {
         super(pos);
         this.value = val;
+        this.exprType=new ClassTypeNode("string", new position(-1,-1));
     }
 
     @Override

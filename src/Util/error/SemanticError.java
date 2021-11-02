@@ -5,6 +5,12 @@ public class semanticError extends error {
 
     public semanticError(String msg, position pos) {
         super("Semantic Error: " + msg, pos);
+        //System.out.println(msg.toString());
     }
 
+    @Override
+    public String getMessage(){
+        return message + " position " +
+                pos.toString();
+    }
 }

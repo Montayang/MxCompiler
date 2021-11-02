@@ -93,9 +93,9 @@ literal
 INT : 'int';
 BOOL : 'bool';
 STRING : 'string';
-NULL : 'null';
-TRUE : 'true';
-FALSE : 'false';
+//NULL : 'null';
+//TRUE : 'true';
+//FALSE : 'false';
 IF : 'if';
 ELSE : 'else';
 FOR : 'for';
@@ -109,9 +109,9 @@ THIS : 'this';
 NEW : 'new';
 
 INTERGER_CONST: '0' | [1-9][0-9]*;
-BOOL_CONST: TRUE | FALSE;
+BOOL_CONST: 'true' | 'false';
 STRING_CONST: '"' ('\\n' | '\\\\' | '\\"' | .)*? '"';
-NULL_CONST: NULL;
+NULL_CONST: 'null';
 
 IDENTIFIER : [a-zA-Z] [a-zA-Z0-9_]* ;
 WHITESPACE : [ \t]+ -> skip ;

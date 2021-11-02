@@ -8,6 +8,7 @@ public class IntConstExprNode extends ExprNode {
     public IntConstExprNode(long val, position pos) {
         super(pos);
         this.value = val;
+        this.exprType=new ClassTypeNode("int", new position(-1,-1));
     }
 
     @Override

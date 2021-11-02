@@ -46,7 +46,7 @@ public class SemanticChecker implements ASTVisitor {
         curScp = new Scope(curScp);
         funcInDef.push(funcDefNode);
         if (funcDefNode.funcType != null && !Objects.equals(funcDefNode.funcType.Typename, "void") && !globalScp.containClass(funcDefNode.funcType.Typename))
-            throw new semanticError("Undefined Function Return Type" + funcDefNode.funcType.Typename, funcDefNode.pos);
+            throw new semanticError("Undefined function return-type " + funcDefNode.funcType.Typename, funcDefNode.pos);
         if (funcDefNode.parList != null) {
             for (VarDefNode ele : funcDefNode.parList) ele.accept(this);
         }
@@ -62,7 +62,7 @@ public class SemanticChecker implements ASTVisitor {
         if (curScp.containVar(varDefNode.varName))
             throw new semanticError("Duplicate Variable Declaration " + varDefNode.varType.Typename, varDefNode.pos);
         if (!globalScp.containClass(varDefNode.varType.Typename))
-            throw new semanticError("Undefined Class" + varDefNode.varType.Typename, varDefNode.pos);
+            throw new semanticError("Undefined Class  " + varDefNode.varType.Typename, varDefNode.pos);
         if (varDefNode.initValue != null) {
             varDefNode.initValue.accept(this);
             if (varDefNode.initValue.exprType.Typename != null && !varDefNode.initValue.exprType.equals(varDefNode.varType))
@@ -105,7 +105,6 @@ public class SemanticChecker implements ASTVisitor {
 
     @Override
     public void visit(ForStmtNode forStmtNode) {
-        curScp = new Scope(curScp);
         if (forStmtNode.initExpr != null) {
             forStmtNode.initExpr.accept(this);
             if (!(forStmtNode.initExpr instanceof VardefStmtNode) && !(forStmtNode.initExpr instanceof PureExprStmtNode))
@@ -118,6 +117,7 @@ public class SemanticChecker implements ASTVisitor {
         }
         if (forStmtNode.stepExpr != null) forStmtNode.stepExpr.accept(this);
         this.inLoop = true;
+        curScp = new Scope(curScp);
         if (forStmtNode.forBody != null) forStmtNode.forBody.accept(this);
         this.inLoop = false;
         curScp = curScp.parent;
@@ -175,8 +175,8 @@ public class SemanticChecker implements ASTVisitor {
 
     @Override
     public void visit(IdExprNode idExprNode) {
-        if (!curScp.containVar(idExprNode.name))
-            throw new semanticError("Undefined variable" + idExprNode.name, idExprNode.pos);
+        if (curScp.fetchVarType(idExprNode.name) == null)
+            throw new semanticError("Undefined variable " + idExprNode.name, idExprNode.pos);
         idExprNode.exprType = curScp.fetchVarType(idExprNode.name);
         idExprNode.isAssignable = true;
     }
@@ -288,7 +288,7 @@ public class SemanticChecker implements ASTVisitor {
     public void visit(SelfExprNode selfExprNode) {
         selfExprNode.object.accept(this);
         if (!Objects.equals(selfExprNode.object.exprType.Typename, "int"))
-            throw new semanticError("Wrong type when operate", selfExprNode.pos);
+            throw new semanticError("Wrong type when operate1", selfExprNode.pos);
         selfExprNode.exprType = selfExprNode.object.exprType;
         selfExprNode.isAssignable=true;
     }
@@ -299,11 +299,11 @@ public class SemanticChecker implements ASTVisitor {
         switch (unaryExprNode.op) {
             case "++","--","~","+","-"->{
                 if (!Objects.equals(unaryExprNode.object.exprType.Typename, "int"))
-                    throw new semanticError("Wrong type when operate", unaryExprNode.pos);
+                    throw new semanticError("Wrong type when operate2", unaryExprNode.pos);
             }
             case "!"->{
                 if (!Objects.equals(unaryExprNode.object.exprType.Typename, "bool"))
-                    throw new semanticError("Wrong type when operate", unaryExprNode.pos);
+                    throw new semanticError("Wrong type when operate3", unaryExprNode.pos);
             }
         }
         unaryExprNode.exprType = unaryExprNode.object.exprType;
@@ -316,10 +316,10 @@ public class SemanticChecker implements ASTVisitor {
         ExprNode exprR=binaryExprNode.exprR;
         exprL.accept(this);
         exprR.accept(this);
-        if (exprL.exprType.equals(exprR.exprType) && !Objects.equals(op, "==") && !Objects.equals(op, "!="))
-            throw new semanticError("Type does not matched", binaryExprNode.pos);
+        if (!exprL.exprType.equals(exprR.exprType) && !Objects.equals(op, "==") && !Objects.equals(op, "!="))
+            throw new semanticError("Type does not matched in binary op", binaryExprNode.pos);
         TypeNode type=exprL.exprType;
-        binaryExprNode.exprType=type;
+        binaryExprNode.exprType=new ClassTypeNode(type.Typename, binaryExprNode.pos);
         switch (op) {
             case "+","<",">",">=","<=" -> {
                 if (!Objects.equals(type.Typename, "int") && !Objects.equals(type.Typename, "String"))
@@ -337,7 +337,7 @@ public class SemanticChecker implements ASTVisitor {
             }
             case "==","!=" -> {
                 if (!exprL.exprType.equals(exprR.exprType) && exprR.exprType.Typename!=null)
-                    throw new semanticError("Type does not matched", binaryExprNode.pos);
+                    throw new semanticError("Type does not matched in == or !=", binaryExprNode.pos);
                 binaryExprNode.exprType.Typename="bool";
             }
         }
@@ -348,9 +348,9 @@ public class SemanticChecker implements ASTVisitor {
         assignExprNode.exprL.accept(this);
         assignExprNode.exprR.accept(this);
         if (!assignExprNode.exprL.isAssignable) throw new semanticError("Left value is required", assignExprNode.pos);
-        if (!assignExprNode.exprL.exprType.equals(assignExprNode.exprR.exprType) && assignExprNode.exprR.exprType.Typename!=null)
+        if (assignExprNode.exprR.exprType!=null && !assignExprNode.exprL.exprType.equals(assignExprNode.exprR.exprType))
             throw new semanticError("Type does not matched", assignExprNode.pos);
-        if (assignExprNode.exprR.exprType.Typename==null && (Objects.equals(assignExprNode.exprL.exprType.Typename, "int") && Objects.equals(assignExprNode.exprL.exprType.Typename, "bool") && Objects.equals(assignExprNode.exprL.exprType.Typename, "String")))
+        if (assignExprNode.exprR.exprType!=null && assignExprNode.exprR.exprType.Typename==null && (Objects.equals(assignExprNode.exprL.exprType.Typename, "int") && Objects.equals(assignExprNode.exprL.exprType.Typename, "bool") && Objects.equals(assignExprNode.exprL.exprType.Typename, "String")))
             throw new semanticError("Null can not assigned", assignExprNode.pos);
         assignExprNode.isAssignable=true;
     }

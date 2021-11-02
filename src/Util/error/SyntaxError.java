@@ -7,4 +7,10 @@ public class syntaxError extends error {
         super("SyntaxError: " + msg, pos);
     }
 
+    @Override
+    public String getMessage(){
+        return message + " position " +
+                pos.toString();
+    }
+
 }

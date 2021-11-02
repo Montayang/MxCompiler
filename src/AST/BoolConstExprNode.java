@@ -8,6 +8,7 @@ public class BoolConstExprNode extends ExprNode {
     public BoolConstExprNode(boolean val, position pos) {
         super(pos);
         this.value = val;
+        this.exprType=new ClassTypeNode("bool", new position(-1,-1));
     }
 
     @Override

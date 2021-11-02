@@ -17,7 +17,8 @@ public class ASTBuilder extends MxStarBaseVisitor<ASTNode> {
         for (MxStarParser.SubProgramContext ele : ctx.subProgram()) {
             if (ele.varDef() != null) elements.add(visit(ele.varDef()));
             if (ele.classDef() != null) elements.add(visit(ele.classDef()));
-            if (ele.funcDef() != null) elements.add(visit(ele.funcDef()));
+            if (ele.funcDef() != null)
+                elements.add(visit(ele.funcDef()));
         }
         return new RootNode(elements, new position(ctx));
     }
@@ -49,7 +50,7 @@ public class ASTBuilder extends MxStarBaseVisitor<ASTNode> {
 
     @Override
     public ASTNode visitClassDef(MxStarParser.ClassDefContext ctx) {
-        String name=ctx.CLASS().getText();
+        String name=ctx.IDENTIFIER().getText();
         ArrayList<VardefStmtNode> varMem=new ArrayList<>();
         ArrayList<FuncDefNode> funcMem=new ArrayList<>();
         if (ctx.varDef() != null) {
@@ -125,7 +126,7 @@ public class ASTBuilder extends MxStarBaseVisitor<ASTNode> {
     public ASTNode visitForStmt(MxStarParser.ForStmtContext ctx){
         StmtNode init =null;
         if (ctx.initDef != null) init=(VardefStmtNode) visit(ctx.initDef);
-        else if (ctx.initExpr != null) init = (PureExprStmtNode) visit(ctx.initExpr);
+        else if (ctx.initExpr != null) init = new PureExprStmtNode((ExprNode) visit(ctx.initExpr),new position(ctx.initExpr));
         ExprNode cond = (ExprNode) visit(ctx.condExpr), step = (ExprNode) visit(ctx.stepExpr);
         StmtNode body=(StmtNode) visit(ctx.statement());
         return new ForStmtNode(init,cond,step,body,new position(ctx));

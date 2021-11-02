@@ -10,11 +10,14 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         InputStream input = System.in;
+//        String name = "testcases/sema/basic-package/basic-7.mx";
+//        InputStream input = new FileInputStream(name);
         try {
             MxStarLexer lexer = new MxStarLexer(CharStreams.fromStream(input));
             lexer.removeErrorListeners();
@@ -26,10 +29,11 @@ public class Main {
 
             ASTBuilder test = new ASTBuilder();
             RootNode root = (RootNode) test.visit(parseTreeRoot);
-            globalScope gScope = new globalScope(null);
+            globalScope glbScope = new globalScope(null);
             SymbolCollector symbolCollector = new SymbolCollector();
             symbolCollector.visit(root);
-            SemanticChecker semanticCheck = new SemanticChecker(gScope);
+            glbScope=symbolCollector.glbScope;
+            SemanticChecker semanticCheck = new SemanticChecker(glbScope);
             semanticCheck.visit(root);
         } catch (RuntimeException ER) {
             System.err.println(ER.getMessage());
