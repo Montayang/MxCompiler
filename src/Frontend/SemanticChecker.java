@@ -142,7 +142,8 @@ public class SemanticChecker implements ASTVisitor {
     @Override
     public void visit(ReturnStmtNode returnStmtNode) {
         if (funcInDef.empty()) throw new semanticError("Return statement is not in function",returnStmtNode.pos);
-        if (funcInDef.peek() instanceof FuncDefNode curFunc) {
+        if (funcInDef.peek() instanceof FuncDefNode) {
+            FuncDefNode curFunc = (FuncDefNode) funcInDef.peek();
             if (returnStmtNode.returnExpr!=null) {
                 returnStmtNode.returnExpr.accept(this);
                 if (!returnStmtNode.returnExpr.exprType.equals(curFunc.funcType))
