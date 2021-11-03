@@ -366,16 +366,16 @@ public class SemanticChecker implements ASTVisitor {
     public void visit(LambdaExprNode lambdaExprNode) {
         curScp = new Scope(curScp);
         funcInDef.push(lambdaExprNode);
-        if ((lambdaExprNode.parList == null) != (lambdaExprNode.aryList == null))
-            throw new semanticError("Wrong parameter in lambda", lambdaExprNode.pos);
+        if ((lambdaExprNode.parList == null) != (lambdaExprNode.aryList == null || lambdaExprNode.aryList.size()==0))
+            throw new semanticError("Wrong parameter in lambda1", lambdaExprNode.pos);
         if (lambdaExprNode.parList != null) {
             for (VarDefNode ele : lambdaExprNode.parList) ele.accept(this);
             for (ExprNode ele : lambdaExprNode.aryList) ele.accept(this);
             if (lambdaExprNode.parList.size() != lambdaExprNode.aryList.size())
-                throw new semanticError("Wrong parameter in lambda", lambdaExprNode.pos);
+                throw new semanticError("Wrong parameter in lambda2", lambdaExprNode.pos);
             for (int i = 0; i < lambdaExprNode.parList.size(); i++) {
                 if (!lambdaExprNode.parList.get(i).varType.equals(lambdaExprNode.aryList.get(i).exprType))
-                    throw new semanticError("Wrong parameter in lambda", lambdaExprNode.pos);
+                    throw new semanticError("Wrong parameter in lambda3", lambdaExprNode.pos);
             }
         }
         lambdaExprNode.body.accept(this);

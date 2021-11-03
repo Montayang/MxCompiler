@@ -70,7 +70,7 @@ expression
     | exprL=expression op='&&' exprR=expression                  #binaryExpr
     | exprL=expression op='||' exprR=expression                  #binaryExpr
     | <assoc=right> exprL=expression '=' exprR=expression        #assignExpr
-    | '[&]' ('('parList?')')? '->' suite '('expression (',' expression)*')' #lambdaExpr
+    | '[&]' ('('parList?')')? '->' suite '('(expression (',' expression)*)?')' #lambdaExpr
     ;
 
 newType
