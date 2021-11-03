@@ -12,9 +12,5 @@ abstract public class TypeNode extends ASTNode {
         this.Typename=name;
     }
 
-    public boolean equals(Object object) {
-        if (!(object instanceof TypeNode)) return false;
-        return Objects.equals(Typename, ((TypeNode) object).Typename);
-    }
-
+    abstract public boolean equals(Object object);
 }
