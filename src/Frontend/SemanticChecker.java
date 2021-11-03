@@ -282,7 +282,7 @@ public class SemanticChecker implements ASTVisitor {
         arrayAccExprNode.array.accept(this);
         if (!(arrayAccExprNode.array.exprType instanceof ArrayTypeNode)) throw new semanticError("It is not array", arrayAccExprNode.pos);
         arrayAccExprNode.index.accept(this);
-        if (!Objects.equals(arrayAccExprNode.index.exprType.Typename, "int")) throw new semanticError("Index is not int", arrayAccExprNode.pos);
+        if (!(arrayAccExprNode.index.exprType instanceof ClassTypeNode) || !Objects.equals(arrayAccExprNode.index.exprType.Typename, "int")) throw new semanticError("Index is not int", arrayAccExprNode.pos);
         if (((ArrayTypeNode) arrayAccExprNode.array.exprType).size == 1)
             arrayAccExprNode.exprType = new ClassTypeNode(arrayAccExprNode.array.exprType.Typename, arrayAccExprNode.pos);
         else arrayAccExprNode.exprType = new ArrayTypeNode(arrayAccExprNode.array.exprType.Typename, ((ArrayTypeNode) arrayAccExprNode.array.exprType).size-1,arrayAccExprNode.pos);
@@ -291,6 +291,7 @@ public class SemanticChecker implements ASTVisitor {
 
     @Override
     public void visit(SelfExprNode selfExprNode) {
+        if(!selfExprNode.object.isAssignable) throw new semanticError("Right value can't operate",selfExprNode.pos);
         selfExprNode.object.accept(this);
         if (!Objects.equals(selfExprNode.object.exprType.Typename, "int"))
             throw new semanticError("Wrong type when operate1", selfExprNode.pos);
@@ -300,7 +301,8 @@ public class SemanticChecker implements ASTVisitor {
     @Override
     public void visit(UnaryExprNode unaryExprNode) {
         unaryExprNode.object.accept(this);
-        if((unaryExprNode.op.equals("--") || unaryExprNode.op.equals("++")) && !unaryExprNode.object.isAssignable) throw new semanticError("Right value can't operate",unaryExprNode.pos);
+        if((unaryExprNode.op.equals("--") || unaryExprNode.op.equals("++")) && !unaryExprNode.object.isAssignable)
+            throw new semanticError("Right value can't operate",unaryExprNode.pos);
         switch (unaryExprNode.op) {
             case "++","--","~","+","-"->{
                 if (!Objects.equals(unaryExprNode.object.exprType.Typename, "int"))
