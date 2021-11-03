@@ -352,7 +352,7 @@ public class SemanticChecker implements ASTVisitor {
         if (!assignExprNode.exprL.isAssignable) throw new semanticError("Left value is required", assignExprNode.pos);
         if (assignExprNode.exprR.exprType!=null && assignExprNode.exprR.exprType.Typename!=null && !assignExprNode.exprL.exprType.equals(assignExprNode.exprR.exprType))
             throw new semanticError("Type does not matched", assignExprNode.pos);
-        if (assignExprNode.exprR.exprType!=null && assignExprNode.exprR.exprType.Typename==null && ((Objects.equals(assignExprNode.exprL.exprType.Typename, "int") || Objects.equals(assignExprNode.exprL.exprType.Typename, "bool") || Objects.equals(assignExprNode.exprL.exprType.Typename, "String"))))
+        if (assignExprNode.exprR.exprType!=null && assignExprNode.exprR.exprType.Typename==null && assignExprNode.exprL.exprType instanceof ClassTypeNode &&((Objects.equals(assignExprNode.exprL.exprType.Typename, "int") || Objects.equals(assignExprNode.exprL.exprType.Typename, "bool") || Objects.equals(assignExprNode.exprL.exprType.Typename, "String"))))
             throw new semanticError("Null can not assigned", assignExprNode.pos);
         assignExprNode.isAssignable=true;
     }
