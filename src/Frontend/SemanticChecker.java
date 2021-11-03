@@ -14,14 +14,14 @@ public class SemanticChecker implements ASTVisitor {
     public Scope curScp;
     public String curClass;
     public Stack<ASTNode> funcInDef;
-    public boolean inLoop;
+    public int inLoop;
 
     public SemanticChecker(globalScope glbScp) {
         this.globalScp = glbScp;
         this.curScp = glbScp;
         this.curClass = null;
         funcInDef = new Stack<>();
-        this.inLoop = false;
+        this.inLoop = 0;
     }
 
     @Override
@@ -116,10 +116,10 @@ public class SemanticChecker implements ASTVisitor {
                 throw new semanticError("Condition in for-loop is not bool-type", forStmtNode.pos);
         }
         if (forStmtNode.stepExpr != null) forStmtNode.stepExpr.accept(this);
-        this.inLoop = true;
+        this.inLoop++;
         curScp = new Scope(curScp);
         if (forStmtNode.forBody != null) forStmtNode.forBody.accept(this);
-        this.inLoop = false;
+        this.inLoop--;
         curScp = curScp.parent;
     }
 
@@ -132,10 +132,10 @@ public class SemanticChecker implements ASTVisitor {
             throw new semanticError("Condition in while-loop is not bool-type", whileStmtNode.pos);
         if (whileStmtNode.whileBody != null) {
             curScp = new Scope(curScp);
-            this.inLoop = true;
+            this.inLoop++;
             whileStmtNode.whileBody.accept(this);
             curScp = curScp.parent;
-            this.inLoop = false;
+            this.inLoop--;
         }
     }
 
@@ -144,11 +144,11 @@ public class SemanticChecker implements ASTVisitor {
         if (funcInDef.empty()) throw new semanticError("Return statement is not in function",returnStmtNode.pos);
         if (funcInDef.peek() instanceof FuncDefNode) {
             FuncDefNode curFunc = (FuncDefNode) funcInDef.peek();
-            if (returnStmtNode.returnExpr!=null) {
+            if (returnStmtNode.returnExpr!=null && !(returnStmtNode.returnExpr instanceof NullConstExprNode)) {
                 returnStmtNode.returnExpr.accept(this);
                 if (!returnStmtNode.returnExpr.exprType.equals(curFunc.funcType))
                     throw new semanticError("Wrong return-type in "+curFunc.funcName,returnStmtNode.pos);
-            } else if (curFunc.funcType != null && !Objects.equals(curFunc.funcType.Typename, "void"))
+            } else if (curFunc.funcType != null && (Objects.equals(curFunc.funcType.Typename, "int") || Objects.equals(curFunc.funcType.Typename, "bool") || Objects.equals(curFunc.funcType.Typename, "string")))
                 throw new semanticError("Wrong return-type in "+curFunc.funcName,returnStmtNode.pos);
             curFunc.hasReturn=true;
         } else {
@@ -162,12 +162,12 @@ public class SemanticChecker implements ASTVisitor {
 
     @Override
     public void visit(ContinueStmtNode continueStmtNode) {
-        if (!this.inLoop) throw new semanticError("Continue statement is not in loop", continueStmtNode.pos);
+        if (this.inLoop==0) throw new semanticError("Continue statement is not in loop", continueStmtNode.pos);
     }
 
     @Override
     public void visit(BreakStmtNode breakStmtNode) {
-        if (!this.inLoop) throw new semanticError("Break statement is not in loop", breakStmtNode.pos);
+        if (this.inLoop==0) throw new semanticError("Break statement is not in loop", breakStmtNode.pos);
     }
 
     @Override

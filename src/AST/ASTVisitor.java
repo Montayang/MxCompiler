@@ -32,5 +32,4 @@ public interface ASTVisitor {
     void visit(BinaryExprNode binaryExprNode);
     void visit(AssignExprNode assignExprNode);
     void visit(LambdaExprNode lambdaExprNode);
-
 }

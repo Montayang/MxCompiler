@@ -84,8 +84,7 @@ public class ASTBuilder extends MxStarBaseVisitor<ASTNode> {
     @Override
     public ASTNode visitFuncType(MxStarParser.FuncTypeContext ctx) {
         if (ctx.VOID() == null) {
-            if (ctx.varType() == null) return new ClassTypeNode(null,new position(ctx));
-            return new ClassTypeNode(ctx.varType().getText(),new position(ctx));
+            return visit(ctx.varType());
         }
         return new ClassTypeNode("void",new position(ctx));
     }
