@@ -2,6 +2,8 @@ package AST;
 
 import Util.position;
 
+import java.util.Objects;
+
 public class ArrayTypeNode extends TypeNode {
     public int size;
     public ArrayTypeNode(TypeNode baseType, position pos) {
@@ -18,4 +20,9 @@ public class ArrayTypeNode extends TypeNode {
 
     @Override
     public void accept(ASTVisitor visitor) {}
+
+    public boolean equals(Object object) {
+        if (!(object instanceof ArrayTypeNode)) return false;
+        return Objects.equals(Typename, ((TypeNode) object).Typename) && (this.size==((ArrayTypeNode) object).size);
+    }
 }
