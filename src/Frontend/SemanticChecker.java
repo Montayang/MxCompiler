@@ -52,7 +52,7 @@ public class SemanticChecker implements ASTVisitor {
         }
         funcDefNode.funcBody.accept(this);
         if (funcDefNode.funcType != null && !Objects.equals(funcDefNode.funcType.Typename, "void") && !funcDefNode.funcName.equals("main") && !funcDefNode.hasReturn)
-            throw new semanticError("Lack of Return Statement in " + funcDefNode.funcName, funcDefNode.pos);
+            throw new semanticError("Lack of return statement in " + funcDefNode.funcName, funcDefNode.pos);
         curScp = curScp.parent;
         funcInDef.pop();
     }
@@ -150,6 +150,7 @@ public class SemanticChecker implements ASTVisitor {
                     throw new semanticError("Wrong return-type in "+curFunc.funcName,returnStmtNode.pos);
             } else if (curFunc.funcType != null && !Objects.equals(curFunc.funcType.Typename, "void"))
                 throw new semanticError("Wrong return-type in "+curFunc.funcName,returnStmtNode.pos);
+            curFunc.hasReturn=true;
         } else {
             LambdaExprNode curFunc = (LambdaExprNode) funcInDef.peek();
             if (returnStmtNode.returnExpr == null) throw new semanticError("No return statement in lambda", returnStmtNode.pos);
@@ -349,9 +350,9 @@ public class SemanticChecker implements ASTVisitor {
         assignExprNode.exprL.accept(this);
         assignExprNode.exprR.accept(this);
         if (!assignExprNode.exprL.isAssignable) throw new semanticError("Left value is required", assignExprNode.pos);
-        if (assignExprNode.exprR.exprType!=null && !assignExprNode.exprL.exprType.equals(assignExprNode.exprR.exprType))
+        if (assignExprNode.exprR.exprType!=null && assignExprNode.exprR.exprType.Typename!=null && !assignExprNode.exprL.exprType.equals(assignExprNode.exprR.exprType))
             throw new semanticError("Type does not matched", assignExprNode.pos);
-        if (assignExprNode.exprR.exprType!=null && assignExprNode.exprR.exprType.Typename==null && (Objects.equals(assignExprNode.exprL.exprType.Typename, "int") && Objects.equals(assignExprNode.exprL.exprType.Typename, "bool") && Objects.equals(assignExprNode.exprL.exprType.Typename, "String")))
+        if (assignExprNode.exprR.exprType!=null && assignExprNode.exprR.exprType.Typename==null && ((Objects.equals(assignExprNode.exprL.exprType.Typename, "int") || Objects.equals(assignExprNode.exprL.exprType.Typename, "bool") || Objects.equals(assignExprNode.exprL.exprType.Typename, "String"))))
             throw new semanticError("Null can not assigned", assignExprNode.pos);
         assignExprNode.isAssignable=true;
     }
