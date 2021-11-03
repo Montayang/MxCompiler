@@ -70,12 +70,14 @@ public class ASTBuilder extends MxStarBaseVisitor<ASTNode> {
         TypeNode type=(TypeNode) visit(ctx.funcType());
         String name=ctx.IDENTIFIER().getText();
         ArrayList<VarDefNode> parList= new ArrayList<>();
-        BlockStmtNode funcBody=(BlockStmtNode) visit(ctx.suite());
         if (ctx.parList() != null) {
             for (MxStarParser.SingleVarDefContext ele : ctx.parList().singleVarDef()) {
-                parList.add((VarDefNode) visit(ele));
+                String id = ele.IDENTIFIER().getText();
+                TypeNode tmpType = (TypeNode) visit(ele.varType());
+                parList.add(new VarDefNode(tmpType,id, null,new position(ele)));
             }
         } else parList=null;
+        BlockStmtNode funcBody=(BlockStmtNode) visit(ctx.suite());
         return new FuncDefNode(type,name,parList,funcBody,new position(ctx));
     }
 

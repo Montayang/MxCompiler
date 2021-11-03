@@ -47,7 +47,7 @@ public class SemanticChecker implements ASTVisitor {
         funcInDef.push(funcDefNode);
         if (funcDefNode.funcType != null && !Objects.equals(funcDefNode.funcType.Typename, "void") && !globalScp.containClass(funcDefNode.funcType.Typename))
             throw new semanticError("Undefined function return-type " + funcDefNode.funcType.Typename, funcDefNode.pos);
-        if (funcDefNode.parList != null) {
+        if (funcDefNode.parList != null && !funcDefNode.parList.isEmpty()) {
             for (VarDefNode ele : funcDefNode.parList) ele.accept(this);
         }
         funcDefNode.funcBody.accept(this);
