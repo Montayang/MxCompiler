@@ -59,8 +59,8 @@ public class SemanticChecker implements ASTVisitor {
 
     @Override
     public void visit(VarDefNode varDefNode) {
-        if (curClass == null && curScp.containVar(varDefNode.varName))
-            throw new semanticError("Duplicate variable declaration " + varDefNode.varType.Typename, varDefNode.pos);
+        if (!funcInDef.empty() && curScp.containVar(varDefNode.varName))
+            throw new semanticError("Duplicate variable declaration " + varDefNode.varName, varDefNode.pos);
         if (!globalScp.containClass(varDefNode.varType.Typename))
             throw new semanticError("Undefined class  " + varDefNode.varType.Typename, varDefNode.pos);
         if (varDefNode.initValue != null) {
