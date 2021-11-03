@@ -229,7 +229,9 @@ public class ASTBuilder extends MxStarBaseVisitor<ASTNode> {
         ArrayList<ExprNode> aryList=new ArrayList<>();
         if (ctx.parList()!=null) {
             for (MxStarParser.SingleVarDefContext ele : ctx.parList().singleVarDef()) {
-                parList.add((VarDefNode)visit(ele));
+                String id = ele.IDENTIFIER().getText();
+                TypeNode tmpType = (TypeNode) visit(ele.varType());
+                parList.add(new VarDefNode(tmpType,id, null,new position(ele)));
             }
         } else parList=null;
         if (ctx.expression()!=null) {
