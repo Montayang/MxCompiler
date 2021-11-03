@@ -129,7 +129,8 @@ public class ASTBuilder extends MxStarBaseVisitor<ASTNode> {
         StmtNode init =null;
         if (ctx.initDef != null) init=(VardefStmtNode) visit(ctx.initDef);
         else if (ctx.initExpr != null) init = new PureExprStmtNode((ExprNode) visit(ctx.initExpr),new position(ctx.initExpr));
-        ExprNode cond = (ExprNode) visit(ctx.condExpr), step = (ExprNode) visit(ctx.stepExpr);
+        ExprNode cond = ctx.condExpr==null? null : (ExprNode) visit(ctx.condExpr);
+        ExprNode step = ctx.stepExpr==null? null : (ExprNode) visit(ctx.stepExpr);
         StmtNode body=(StmtNode) visit(ctx.statement());
         return new ForStmtNode(init,cond,step,body,new position(ctx));
     }

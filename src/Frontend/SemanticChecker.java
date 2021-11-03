@@ -298,6 +298,7 @@ public class SemanticChecker implements ASTVisitor {
     @Override
     public void visit(UnaryExprNode unaryExprNode) {
         unaryExprNode.object.accept(this);
+        if((unaryExprNode.op.equals("--") || unaryExprNode.op.equals("++")) && !unaryExprNode.object.isAssignable) throw new semanticError("Right value can't operate",unaryExprNode.pos);
         switch (unaryExprNode.op) {
             case "++","--","~","+","-"->{
                 if (!Objects.equals(unaryExprNode.object.exprType.Typename, "int"))
