@@ -292,6 +292,7 @@ public class SemanticChecker implements ASTVisitor {
     @Override
     public void visit(SelfExprNode selfExprNode) {
         selfExprNode.object.accept(this);
+        if(!selfExprNode.object.isAssignable) throw new semanticError("Right value can't operate",selfExprNode.pos);
         if (!Objects.equals(selfExprNode.object.exprType.Typename, "int"))
             throw new semanticError("Wrong type when operate1", selfExprNode.pos);
         selfExprNode.exprType = selfExprNode.object.exprType;
