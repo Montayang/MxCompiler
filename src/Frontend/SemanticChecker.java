@@ -324,17 +324,17 @@ public class SemanticChecker implements ASTVisitor {
         binaryExprNode.exprType=new ClassTypeNode(type.Typename, binaryExprNode.pos);
         switch (op) {
             case "+","<",">",">=","<=" -> {
-                if (!Objects.equals(type.Typename, "int") && !Objects.equals(type.Typename, "String"))
-                    throw new semanticError("Wrong type", binaryExprNode.pos);
+                if (!Objects.equals(type.Typename, "int") && !Objects.equals(type.Typename, "string"))
+                    throw new semanticError("Wrong type1", binaryExprNode.pos);
                 if (!op.equals("+")) binaryExprNode.exprType.Typename="bool";
             }
             case "-","*","/","%",">>","<<","&","|","^" -> {
                 if (!Objects.equals(type.Typename, "int"))
-                    throw new semanticError("Wrong type", binaryExprNode.pos);
+                    throw new semanticError("Wrong type2", binaryExprNode.pos);
             }
             case "&&","||" -> {
                 if (!Objects.equals(type.Typename, "bool"))
-                    throw new semanticError("Wrong type", binaryExprNode.pos);
+                    throw new semanticError("Wrong type3", binaryExprNode.pos);
                 binaryExprNode.exprType.Typename="bool";
             }
             case "==","!=" -> {

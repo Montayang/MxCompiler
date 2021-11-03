@@ -119,7 +119,8 @@ public class ASTBuilder extends MxStarBaseVisitor<ASTNode> {
     @Override
     public ASTNode visitIfStmt(MxStarParser.IfStmtContext ctx) {
         ExprNode expr = (ExprNode) visit(ctx.expression());
-        StmtNode thenStmt=(StmtNode) visit(ctx.thenStmt),elseStmt=(StmtNode) visit(ctx.elseStmt);
+        StmtNode thenStmt=ctx.thenStmt==null? null:(StmtNode) visit(ctx.thenStmt);
+        StmtNode elseStmt=ctx.elseStmt==null? null:(StmtNode) visit(ctx.elseStmt);
         return new IfStmtNode(expr,thenStmt,elseStmt,new position(ctx));
     }
 
