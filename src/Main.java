@@ -16,7 +16,7 @@ import java.io.InputStream;
 public class Main {
     public static void main(String[] args) throws Exception {
         InputStream input = System.in;
-//        String name = "testcases/sema/basic-package/basic-7.mx";
+//        String name = "testcases/sema/basic-package/basic-11.mx";
 //        InputStream input = new FileInputStream(name);
         try {
             MxStarLexer lexer = new MxStarLexer(CharStreams.fromStream(input));

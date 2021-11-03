@@ -17,8 +17,7 @@ public class ASTBuilder extends MxStarBaseVisitor<ASTNode> {
         for (MxStarParser.SubProgramContext ele : ctx.subProgram()) {
             if (ele.varDef() != null) elements.add(visit(ele.varDef()));
             if (ele.classDef() != null) elements.add(visit(ele.classDef()));
-            if (ele.funcDef() != null)
-                elements.add(visit(ele.funcDef()));
+            if (ele.funcDef() != null) elements.add(visit(ele.funcDef()));
         }
         return new RootNode(elements, new position(ctx));
     }
@@ -141,6 +140,7 @@ public class ASTBuilder extends MxStarBaseVisitor<ASTNode> {
 
     @Override
     public ASTNode visitReturnStmt(MxStarParser.ReturnStmtContext ctx) {
+        if (ctx.expression() ==  null) return new ReturnStmtNode(null, new position(ctx));
         return new ReturnStmtNode((ExprNode) visit(ctx.expression()),new position(ctx));
     }
 
