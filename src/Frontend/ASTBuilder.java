@@ -67,7 +67,7 @@ public class ASTBuilder extends MxStarBaseVisitor<ASTNode> {
 
     @Override
     public ASTNode visitFuncDef(MxStarParser.FuncDefContext ctx) {
-        TypeNode type=(TypeNode) visit(ctx.funcType());
+        TypeNode type=ctx.funcType()==null ? null : (TypeNode) visit(ctx.funcType());
         String name=ctx.IDENTIFIER().getText();
         ArrayList<VarDefNode> parList= new ArrayList<>();
         if (ctx.parList() != null) {

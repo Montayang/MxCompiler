@@ -240,7 +240,7 @@ public class SemanticChecker implements ASTVisitor {
 
     @Override
     public void visit(FuncCallExprNode funcCallExprNode) {
-        FuncDefNode base;
+        FuncDefNode base = null;
         if (funcCallExprNode.func instanceof MemberAccExprNode) {
             ((MemberAccExprNode) funcCallExprNode.func).ifFunc = true;
             funcCallExprNode.func.accept(this);
@@ -250,13 +250,16 @@ public class SemanticChecker implements ASTVisitor {
             if (curClass == null) {
                 if (!globalScp.funcTable.containsKey(name))
                     throw new semanticError("Undefined function", funcCallExprNode.pos);
+                base=globalScp.fetchFunc(name);
             } else {
                 if (globalScp.classTable.get(curClass).funcTable.containsKey(name))
                     base=globalScp.classTable.get(curClass).fetchFunc(name);
-                else if (!globalScp.funcTable.containsKey(name))
-                    throw new semanticError("Undefined function", funcCallExprNode.pos);
+                else {
+                    if (!globalScp.funcTable.containsKey(name))
+                        throw new semanticError("Undefined function", funcCallExprNode.pos);
+                    base=globalScp.fetchFunc(name);
+                }
             }
-            base=globalScp.fetchFunc(name);
         }
         if (funcCallExprNode.aryList!= null) {
             for (ExprNode ele : funcCallExprNode.aryList) ele.accept(this);
@@ -292,7 +295,6 @@ public class SemanticChecker implements ASTVisitor {
         if (!Objects.equals(selfExprNode.object.exprType.Typename, "int"))
             throw new semanticError("Wrong type when operate1", selfExprNode.pos);
         selfExprNode.exprType = selfExprNode.object.exprType;
-        selfExprNode.isAssignable=true;
     }
 
     @Override
@@ -309,6 +311,7 @@ public class SemanticChecker implements ASTVisitor {
                     throw new semanticError("Wrong type when operate3", unaryExprNode.pos);
             }
         }
+        if (unaryExprNode.op.equals("--") || unaryExprNode.op.equals("++")) unaryExprNode.isAssignable=true;
         unaryExprNode.exprType = unaryExprNode.object.exprType;
     }
 
