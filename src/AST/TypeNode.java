@@ -2,8 +2,6 @@ package AST;
 
 import Util.position;
 
-import java.util.Objects;
-
 abstract public class TypeNode extends ASTNode {
     public String Typename;
 

@@ -15,9 +15,9 @@ import java.io.InputStream;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        InputStream input = System.in;
-//        String name = "testcases/sema/basic-package/basic-11.mx";
-//        InputStream input = new FileInputStream(name);
+//        InputStream input = System.in;
+        String name = "testcases/sema/expression-package/expression-1.mx";
+        InputStream input = new FileInputStream(name);
         try {
             MxStarLexer lexer = new MxStarLexer(CharStreams.fromStream(input));
             lexer.removeErrorListeners();
@@ -29,7 +29,7 @@ public class Main {
 
             ASTBuilder test = new ASTBuilder();
             RootNode root = (RootNode) test.visit(parseTreeRoot);
-            globalScope glbScope = new globalScope(null);
+            globalScope glbScope;
             SymbolCollector symbolCollector = new SymbolCollector();
             symbolCollector.visit(root);
             glbScope=symbolCollector.glbScope;
