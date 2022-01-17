@@ -24,5 +24,5 @@ public interface IRVisitor {
 
     void visit(BasicBlock it);
 
-    void visit(IRfunction it);
+    void visit(IRFunction it);
 }

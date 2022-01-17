@@ -1,7 +1,7 @@
 package MIR.Value.BasicBlock;
 
 import Backend.IRVisitor;
-import MIR.IRfunction;
+import MIR.IRFunction;
 import MIR.Value.User.Instruction.Instruction;
 import MIR.Value.Value;
 
@@ -9,11 +9,11 @@ import java.util.LinkedList;
 
 public class BasicBlock extends Value {
     public String blkName;
-    public IRfunction theFunc;
+    public IRFunction theFunc;
     public LinkedList<Instruction> instList = new LinkedList<>();
     public Instruction tmnInst = null;
 
-    public BasicBlock(String name, IRfunction func) {
+    public BasicBlock(String name, IRFunction func) {
         blkName = name;
         theFunc = func;
     }

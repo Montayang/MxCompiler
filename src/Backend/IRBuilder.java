@@ -5,14 +5,14 @@ import MIR.Value.BasicBlock.BasicBlock;
 import Util.*;
 import Frontend.*;
 
-import java.util.*
+import java.util.*;
 
 public class IRBuilder implements ASTVisitor{
     public globalScope semantic_scope;
     public Scope curScp;
     public String curClass, curFunc;
     public BasicBlock curBlock;
-    public Map<String, IRfunction> funcMap = new HashMap<>();
+    public Map<String, IRFunction> funcMap = new HashMap<>();
 
     public IRBuilder(globalScope scope1) {
         semantic_scope = scope1;
