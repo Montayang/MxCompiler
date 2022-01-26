@@ -1,5 +1,6 @@
 package AST;
 
+import MIR.IRType.BaseType;
 import Util.position;
 
 import java.util.Objects;

@@ -1,4 +1,6 @@
 import AST.RootNode;
+import Backend.IRBuilder;
+import Backend.IRPrinter;
 import Frontend.ASTBuilder;
 import Frontend.SemanticChecker;
 import Frontend.SymbolCollector;
@@ -16,9 +18,9 @@ import java.io.InputStream;
 public class Main {
     public static void main(String[] args) throws Exception {
 //        InputStream input = System.in;
-        String name = "testcases/sema/expression-package/expression-1.mx";
+        String name = "F:\\Programming\\MxCompiler\\test.mx";
         InputStream input = new FileInputStream(name);
-        try {
+//        try {
             MxStarLexer lexer = new MxStarLexer(CharStreams.fromStream(input));
             lexer.removeErrorListeners();
             lexer.addErrorListener(new MxErrorListener());
@@ -35,9 +37,14 @@ public class Main {
             glbScope=symbolCollector.glbScope;
             SemanticChecker semanticCheck = new SemanticChecker(glbScope);
             semanticCheck.visit(root);
-        } catch (RuntimeException ER) {
-            System.err.println(ER.getMessage());
-            throw new RuntimeException();
-        }
+
+            IRBuilder irBuilder = new IRBuilder(glbScope);
+            root.accept(irBuilder);
+            IRPrinter llvm_naive = new IRPrinter("naive_llvm.ll",name);
+            llvm_naive.init(irBuilder);
+//        } catch (RuntimeException ER) {
+//            System.err.println(ER.getMessage());
+//            throw new RuntimeException();
+//        }
     }
 }

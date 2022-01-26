@@ -1,4 +1,27 @@
 package MIR.Value.User.Instruction;
 
-public class AllocateInst {
+import Backend.IRVisitor;
+import MIR.IRType.BaseType;
+import MIR.Value.BasicBlock.BasicBlock;
+import MIR.Value.User.Constant.Parameter;
+
+public class AllocateInst extends Instruction {
+    public BaseType alcType;
+    public Parameter alcReg;
+
+    public AllocateInst(BasicBlock blk, BaseType type, Parameter reg) {
+        super(blk);
+        alcType = type;
+        alcReg = reg;
+    }
+
+    @Override
+    public void accept(IRVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    @Override
+    public String toString() {
+        return alcReg.toString() + " = alloca " + alcType.toString();
+    }
 }

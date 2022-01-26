@@ -5,6 +5,7 @@ import MIR.IRFunction;
 import MIR.Value.User.Instruction.Instruction;
 import MIR.Value.Value;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 
 public class BasicBlock extends Value {
@@ -12,6 +13,7 @@ public class BasicBlock extends Value {
     public IRFunction theFunc;
     public LinkedList<Instruction> instList = new LinkedList<>();
     public Instruction tmnInst = null;
+    public HashSet<BasicBlock> preBlk = new HashSet<>(), nxtBlk = new HashSet<>();
 
     public BasicBlock(String name, IRFunction func) {
         blkName = name;

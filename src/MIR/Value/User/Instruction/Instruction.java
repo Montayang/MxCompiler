@@ -12,4 +12,6 @@ public abstract class Instruction extends User {
     }
 
     abstract public void accept(IRVisitor visitor);
+
+    abstract public String toString();
 }
