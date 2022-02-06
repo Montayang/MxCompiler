@@ -9,8 +9,7 @@ public class AllocateInst extends Instruction {
     public BaseType alcType;
     public Parameter alcReg;
 
-    public AllocateInst(BasicBlock blk, BaseType type, Parameter reg) {
-        super(blk);
+    public AllocateInst(BaseType type, Parameter reg) {
         alcType = type;
         alcReg = reg;
     }

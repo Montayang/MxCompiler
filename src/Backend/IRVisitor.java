@@ -6,11 +6,15 @@ import MIR.Value.User.Instruction.*;
 public interface IRVisitor {
     void visit(BinaryInst it);
 
+    void visit(BitCastInst it);
+
     void visit(BrInst it);
 
     void visit(CallInst it);
 
     void visit(CmpInst it);
+
+    void visit(GetElementPtrInst it);
 
     void visit(LoadInst it);
 

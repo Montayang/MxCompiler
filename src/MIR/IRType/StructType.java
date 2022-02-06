@@ -3,11 +3,12 @@ package MIR.IRType;
 import java.util.ArrayList;
 
 public class StructType extends BaseType {
-    public ArrayList<BaseType> parList;
+    public ArrayList<BaseType> varList;
+    public ArrayList<Integer> byteList = new ArrayList<>();
 
     public StructType(String name, ArrayList<BaseType> list) {
         super(name);
-        parList = list;
+        varList = list;
     }
 
     @Override

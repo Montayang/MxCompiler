@@ -4,12 +4,17 @@ import MIR.IRType.BaseType;
 
 public class Parameter extends Constant{
     public String parName;
-    public boolean isReg;
+    public boolean isReg = false;
 
     public Parameter(BaseType type1, String name, boolean flag) {
         super(type1);
         parName = name;
         isReg = flag;
+    }
+
+    public Parameter(BaseType type1, String name) {
+        super(type1);
+        parName = name;
     }
 
     @Override

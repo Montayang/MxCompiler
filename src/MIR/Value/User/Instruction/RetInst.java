@@ -2,9 +2,7 @@ package MIR.Value.User.Instruction;
 
 import Backend.IRVisitor;
 import MIR.IRType.BaseType;
-import MIR.Value.BasicBlock.BasicBlock;
 import MIR.Value.User.Constant.Constant;
-import MIR.Value.User.Constant.ConstantValue;
 
 import java.util.Objects;
 
@@ -12,8 +10,7 @@ public class RetInst extends Instruction {
     public BaseType retType;
     public Constant retValue;
 
-    public RetInst(BasicBlock blk, Constant value, BaseType type) {
-        super(blk);
+    public RetInst(Constant value, BaseType type) {
         retType = type;
         retValue = value;
     }

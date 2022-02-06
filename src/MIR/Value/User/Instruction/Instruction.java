@@ -7,10 +7,6 @@ import MIR.Value.User.*;
 public abstract class Instruction extends User {
     public BasicBlock theBlk;
 
-    public Instruction(BasicBlock blk) {
-        theBlk = blk;
-    }
-
     abstract public void accept(IRVisitor visitor);
 
     abstract public String toString();

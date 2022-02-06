@@ -1,15 +1,12 @@
 package MIR.Value.User.Instruction;
 
 import Backend.IRVisitor;
-import MIR.Value.BasicBlock.BasicBlock;
 import MIR.Value.User.Constant.Constant;
-import MIR.Value.User.Constant.Parameter;
 
 public class LoadInst extends Instruction {
     public Constant destinationReg, sourcePtr;
 
-    public LoadInst(BasicBlock blk, Constant reg, Constant ptr) {
-        super(blk);
+    public LoadInst(Constant reg, Constant ptr) {
         destinationReg = reg;
         sourcePtr = ptr;
     }

@@ -37,16 +37,16 @@ public class IRPrinter implements IRVisitor {
             out.append("%");
             out.append(struct.typeName);
             out.append(" = type {");
-            for (int i = 0; i < struct.parList.size(); i++) {
+            for (int i = 0; i < struct.varList.size(); i++) {
                 out.append(" ");
-                out.append(struct.parList.get(i).toString());
-                if (i != struct.parList.size() - 1) out.append(",");
+                out.append(struct.varList.get(i).toString());
+                if (i != struct.varList.size() - 1) out.append(",");
             }
             out.append(" }");
             Print(out.toString());
         }
         for (Map.Entry<String, GlobalVar> entry : builder.glbVarMap.entrySet()) {
-            if (Objects.equals(entry.getValue().init.type.typeName, "string")) continue;
+            if (entry.getValue().init != null && entry.getValue().init.type.equal("string")) continue;
             StringBuilder out = new StringBuilder("0");
             if (((PointerType) (entry.getValue().type)).dim > 1) out = new StringBuilder("null");
             Print(entry.getValue().toString() + " = dso_local global " + ((PointerType) entry.getValue().type).getObjType() + " " + out);
@@ -97,6 +97,11 @@ public class IRPrinter implements IRVisitor {
     }
 
     @Override
+    public void visit(BitCastInst it) {
+        Print("    " + it.toString());
+    }
+
+    @Override
     public void visit(BrInst it) {
         Print("    " + it.toString());
     }
@@ -108,6 +113,11 @@ public class IRPrinter implements IRVisitor {
 
     @Override
     public void visit(CmpInst it) {
+        Print("    " + it.toString());
+    }
+
+    @Override
+    public void visit(GetElementPtrInst it) {
         Print("    " + it.toString());
     }
 

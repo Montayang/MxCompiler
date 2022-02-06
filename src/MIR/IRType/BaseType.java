@@ -19,7 +19,7 @@ public class BaseType {
     public boolean equal(String obj) {
         if (Objects.equals(obj, "bool")) return Objects.equals(typeName, "i1");
         else if (Objects.equals(obj, "int")) return Objects.equals(typeName, "i32");
-        else if (Objects.equals(obj, "void")) return Objects.equals(typeName, "void");
+        else if (Objects.equals(obj, "void")) return Objects.equals(typeName, "void") || typeName == null;
         else return false;
     }
 }

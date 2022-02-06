@@ -1,5 +1,7 @@
 package AST;
 
+import MIR.Value.User.Constant.Parameter;
+import MIR.Value.User.User;
 import Util.position;
 
 import java.util.ArrayList;

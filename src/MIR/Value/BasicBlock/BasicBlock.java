@@ -2,6 +2,7 @@ package MIR.Value.BasicBlock;
 
 import Backend.IRVisitor;
 import MIR.IRFunction;
+import MIR.Value.User.Instruction.BrInst;
 import MIR.Value.User.Instruction.Instruction;
 import MIR.Value.Value;
 
@@ -26,5 +27,14 @@ public class BasicBlock extends Value {
 
     public void addInst(Instruction inst) {
         instList.add(inst);
+        inst.theBlk = this;
+        if (inst instanceof BrInst) {
+            if (((BrInst) inst).cond != null) {
+                inst.theBlk.nxtBlk.add(((BrInst) inst).falseBlk);
+                ((BrInst) inst).falseBlk.preBlk.add(inst.theBlk);
+            }
+            inst.theBlk.nxtBlk.add(((BrInst) inst).trueBlk);
+            ((BrInst) inst).trueBlk.preBlk.add(inst.theBlk);
+        }
     }
 }

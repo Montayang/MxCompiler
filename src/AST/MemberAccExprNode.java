@@ -1,5 +1,6 @@
 package AST;
 
+import MIR.Value.User.Constant.Constant;
 import Util.position;
 
 public class MemberAccExprNode extends ExprNode {
@@ -7,6 +8,7 @@ public class MemberAccExprNode extends ExprNode {
     public String name;
     public boolean ifFunc;
     public FuncDefNode theFunc;
+    public Constant addr = null;
     public MemberAccExprNode(ExprNode obj, String name ,position pos) {
         super(pos);
         this.object=obj;

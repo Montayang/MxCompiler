@@ -2,15 +2,16 @@ package MIR.Value.User.Instruction;
 
 import Backend.IRVisitor;
 
-public class PhiInst extends Instruction {
+public class BitCastInst extends Instruction {
 
-    public PhiInst() {
+
+    public BitCastInst() {
 
     }
 
     @Override
     public void accept(IRVisitor visitor) {
-        visitor.visit(this);
+
     }
 
     @Override

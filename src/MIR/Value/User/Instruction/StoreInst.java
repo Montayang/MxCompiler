@@ -1,12 +1,16 @@
 package MIR.Value.User.Instruction;
 
 import Backend.IRVisitor;
-import MIR.Value.BasicBlock.BasicBlock;
+import MIR.IRType.PointerType;
+import MIR.Value.User.Constant.Constant;
 
 public class StoreInst extends Instruction {
+    public Constant source;
+    public Constant dest;
 
-    public StoreInst(BasicBlock blk) {
-        super(blk);
+    public StoreInst(Constant source_, Constant dest_) {
+        source = source_;
+        dest = dest_;
     }
 
     @Override
@@ -16,6 +20,8 @@ public class StoreInst extends Instruction {
 
     @Override
     public String toString() {
-        return null;
+        if (source.type.equal("void"))
+            return "store " + ((PointerType)dest.type).getObjType() + " null" + ", " + dest.unitOut();
+        return "store " + source.unitOut() + ", "+ dest.unitOut();
     }
 }

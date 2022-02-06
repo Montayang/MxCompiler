@@ -1,24 +1,29 @@
 package MIR.Value.User.Constant;
 
 import MIR.IRType.BaseType;
+import MIR.IRType.PointerType;
 
 import java.util.Objects;
 
 public class ConstantValue extends Constant{
     public boolean boolValue = false;
-    public int intValue = 0;
+    public long intValue = 0;
     public String stringValue = "";
-    public ConstantValue(BaseType type1,boolean value) {
-        super(type1);
+    public ConstantValue(boolean value) {
+        super(new BaseType("i1"));
         boolValue = value;
     }
-    public ConstantValue(BaseType type1,int value) {
-        super(type1);
+    public ConstantValue(long value) {
+        super(new BaseType("i32"));
         intValue = value;
     }
-    public ConstantValue(BaseType type1,String value) {
-        super(type1);
+    public ConstantValue(String value) {
+        super(new PointerType(new BaseType("i8")));
         stringValue = value;
+    }
+
+    public ConstantValue(BaseType type) {
+        super(type);
     }
 
     @Override
