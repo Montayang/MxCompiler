@@ -19,10 +19,10 @@ import java.io.InputStream;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-//        InputStream input = System.in;
-        String name = "F:\\Programming\\MxCompiler\\test.mx";
-        InputStream input = new FileInputStream(name);
-//        try {
+        InputStream input = System.in;
+//        String name = "F:\\Programming\\MxCompiler\\test.mx";
+//        InputStream input = new FileInputStream(name);
+        try {
             MxStarLexer lexer = new MxStarLexer(CharStreams.fromStream(input));
             lexer.removeErrorListeners();
             lexer.addErrorListener(new MxErrorListener());
@@ -42,15 +42,15 @@ public class Main {
 
             IRBuilder irBuilder = new IRBuilder(glbScope);
             root.accept(irBuilder);
-            IRPrinter llvm_naive = new IRPrinter("naive_llvm.ll",name);
-            llvm_naive.init(irBuilder);
+//            IRPrinter llvm_naive = new IRPrinter("naive_llvm.ll",name);
+//            llvm_naive.init(irBuilder);
 
             InstSelect instSelect = new InstSelect(irBuilder);
-            ASMPrinter RISCV_out = new ASMPrinter("RISCV_out.s");
+            ASMPrinter RISCV_out = new ASMPrinter("output.s");
             RISCV_out.init(instSelect);
-//        } catch (RuntimeException ER) {
-//            System.err.println(ER.getMessage());
-//            throw new RuntimeException();
-//        }
+        } catch (RuntimeException ER) {
+            System.err.println(ER.getMessage());
+            throw new RuntimeException();
+        }
     }
 }
