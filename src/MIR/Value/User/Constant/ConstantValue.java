@@ -7,13 +7,13 @@ import java.util.Objects;
 
 public class ConstantValue extends Constant{
     public boolean boolValue = false;
-    public long intValue = 0;
+    public int intValue = 0;
     public String stringValue = "";
     public ConstantValue(boolean value) {
         super(new BaseType("i1"));
         boolValue = value;
     }
-    public ConstantValue(long value) {
+    public ConstantValue(int value) {
         super(new BaseType("i32"));
         intValue = value;
     }

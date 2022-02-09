@@ -8,8 +8,7 @@ public class BaseType {
 
     public BaseType(String name) {
         typeName = name;
-        if (Objects.equals(typeName, "i1") || Objects.equals(typeName, "i8")) byteNum = 1;
-        else if (Objects.equals(typeName, "i32")) byteNum = 4;
+        byteNum = 4;
     }
 
     public int getByteNum() { return byteNum; }

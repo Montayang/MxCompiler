@@ -11,6 +11,7 @@ public class GetElementPtrInst extends Instruction {
     public Parameter retReg;
     public Constant sourcePtr;
     public ArrayList<Constant> indexOffset;
+    public ArrayList<Integer> prefixByte = new ArrayList<>();
 
     public GetElementPtrInst(Parameter reg, Constant ptr, ArrayList<Constant> list) {
         retReg = reg;

@@ -19,6 +19,8 @@ public class IRFunction {
     //for rename
     public Map<String, Integer> regMap = new HashMap<>();
     public Map<String, Integer> blkMap = new HashMap<>();
+    //for codegen
+    public Map<String, Parameter> parMap = new HashMap<>();
 
     public IRFunction(BaseType type, ArrayList<Parameter> list, String name) {
         retType = type;
@@ -31,8 +33,9 @@ public class IRFunction {
         } else {
             retReg = new Parameter(new PointerType(retType),"return_register_infunction_addr", true);
             entryBlk.addInst(new AllocateInst(retType, retReg));
-            retBlk.addInst(new LoadInst(new Parameter(retType, "returnval", true), retReg));
-            retBlk.addInst(new RetInst(new Parameter(retType, "returnval", true), retType));
+            Parameter reg = new Parameter(retType, "returnval", true);
+            retBlk.addInst(new LoadInst(reg, retReg));
+            retBlk.addInst(new RetInst(reg, retType));
         }
         blkList.add(entryBlk);
     }

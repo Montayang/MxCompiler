@@ -1,6 +1,8 @@
 import AST.RootNode;
+import Backend.ASMPrinter;
 import Backend.IRBuilder;
 import Backend.IRPrinter;
+import Backend.InstSelect;
 import Frontend.ASTBuilder;
 import Frontend.SemanticChecker;
 import Frontend.SymbolCollector;
@@ -42,6 +44,10 @@ public class Main {
             root.accept(irBuilder);
             IRPrinter llvm_naive = new IRPrinter("naive_llvm.ll",name);
             llvm_naive.init(irBuilder);
+
+            InstSelect instSelect = new InstSelect(irBuilder);
+            ASMPrinter RISCV_out = new ASMPrinter("RISCV_out.s");
+            RISCV_out.init(instSelect);
 //        } catch (RuntimeException ER) {
 //            System.err.println(ER.getMessage());
 //            throw new RuntimeException();

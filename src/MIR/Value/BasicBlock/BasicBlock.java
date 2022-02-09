@@ -13,7 +13,6 @@ public class BasicBlock extends Value {
     public String blkName;
     public IRFunction theFunc;
     public LinkedList<Instruction> instList = new LinkedList<>();
-    public Instruction tmnInst = null;
     public HashSet<BasicBlock> preBlk = new HashSet<>(), nxtBlk = new HashSet<>();
 
     public BasicBlock(String name, IRFunction func) {

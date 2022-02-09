@@ -12,7 +12,6 @@ import MIR.Value.User.Constant.ConstantValue;
 import MIR.Value.User.Constant.GlobalVar;
 import MIR.Value.User.Constant.Parameter;
 import MIR.Value.User.Instruction.*;
-import MIR.Value.Value;
 import Util.*;
 
 import java.util.*;
@@ -139,12 +138,18 @@ public class IRBuilder implements ASTVisitor {
 
     @Override
     public void visit(RootNode rootNode) {
+        for (ASTNode node : rootNode.elements) {
+            if (node instanceof ClassDefNode) {
+                StructType structType = new StructType("class." + ((ClassDefNode) node).className, new ArrayList<>());
+                structMap.put(((ClassDefNode) node).className, structType);
+            }
+        }
         IRFunction func;
         func = new IRFunction(new BaseType("void"), new ArrayList<>(), "GLOBAL__sub_I_main_mx");
         funcMap.put("GLOBAL__sub_I_main_mx", func);
+        //global var
         curFunc = func;
         curBlock = func.entryBlk;
-        //global var
         for (ASTNode node : rootNode.elements) {
             if (node instanceof VardefStmtNode) {
                 node.accept(this);
@@ -178,7 +183,7 @@ public class IRBuilder implements ASTVisitor {
                         cnt++;
                     }
                 }
-                structMap.put(((ClassDefNode) node).className, structType);
+                ((ClassDefNode) node).prefixByte = structType.byteList;
                 for (FuncDefNode funcDef : ((ClassDefNode) node).funcMem) {
                     ArrayList<Parameter> parList = new ArrayList<>();
                     parList.add(new Parameter(new PointerType(structType), "this"));
@@ -215,6 +220,7 @@ public class IRBuilder implements ASTVisitor {
         if (funcDefNode.parList != null)
             for (VarDefNode par : funcDefNode.parList) {
                 curScope.addID(par.varName + "_para", Register(transType(par.varType), par.varName));
+                curFunc.parMap.put(par.varName + "_para", Register(transType(par.varType), par.varName));
                 par.accept(this);
                 curBlock.addInst(new StoreInst(curScope.get(par.varName + "_para"), curScope.get(par.varName)));
             }
@@ -226,6 +232,7 @@ public class IRBuilder implements ASTVisitor {
             curScope.addID("this_addr", thisAddr);
             Parameter thisPara = Register(curFunc.parList.get(0).type, "this");
             curBlock.addInst(new StoreInst(thisPara, thisAddr));
+            curFunc.parMap.put("this", thisPara);
         }
         if (funcDefNode.funcBody != null) funcDefNode.funcBody.accept(this);
         if (curBlock.instList.isEmpty() || !(curBlock.instList.getLast() instanceof BrInst))
@@ -245,7 +252,6 @@ public class IRBuilder implements ASTVisitor {
             glbVarMap.put(varDefNode.varName, (GlobalVar) var);
             curFunc.renameAdd(var);
         } else {
-            BaseType t = transType(varDefNode.varType);
             var = Register(new PointerType(transType(varDefNode.varType)), varDefNode.varName + "_addr");
             if (curBlock.instList.isEmpty() || !(curBlock.instList.getLast() instanceof BrInst))
                 curFunc.entryBlk.instList.addFirst(new AllocateInst(transType(varDefNode.varType), (Parameter) var));
@@ -692,6 +698,6 @@ public class IRBuilder implements ASTVisitor {
     }
 
     public Parameter mlcArray(int dim, ArrayList<Constant> list, BaseType type) {
-
+        return null;
     }
 }

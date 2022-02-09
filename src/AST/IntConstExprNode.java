@@ -3,9 +3,9 @@ package AST;
 import Util.position;
 
 public class IntConstExprNode extends ExprNode {
-    public long value;
+    public int value;
 
-    public IntConstExprNode(long val, position pos) {
+    public IntConstExprNode(int val, position pos) {
         super(pos);
         this.value = val;
         this.exprType=new ClassTypeNode("int", new position(-1,-1));
