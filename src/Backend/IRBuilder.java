@@ -483,14 +483,14 @@ public class IRBuilder implements ASTVisitor {
             //TODO
             return;
         }
-        ArrayList<Constant> list = new ArrayList<>();
-        for (ExprNode node : newExprNode.sizeList) {
-            node.accept(this);
-            list.add(node.irPar);
-        }
-        BaseType type = transType(((ArrayTypeNode) newExprNode.newType).type);
-        for (int i = 0; i < newExprNode.size; i++) type = new PointerType(type);
-        newExprNode.irPar = mlcArray(0, list, type);
+//        ArrayList<Constant> list = new ArrayList<>();
+//        for (ExprNode node : newExprNode.sizeList) {
+//            node.accept(this);
+//            list.add(node.irPar);
+//        }
+//        BaseType type = transType(((ArrayTypeNode) newExprNode.newType).type);
+//        for (int i = 0; i < newExprNode.size; i++) type = new PointerType(type);
+//        newExprNode.irPar = mlcArray(0, list, type);
     }
 
     @Override
@@ -551,7 +551,7 @@ public class IRBuilder implements ASTVisitor {
 
     @Override
     public void visit(UnaryExprNode unaryExprNode) {
-        unaryExprNode.accept(this);
+        unaryExprNode.object.accept(this);
         switch (unaryExprNode.op) {
             case "++", "--" -> {
                 String op = unaryExprNode.op.equals("++") ? "add" : "sub";

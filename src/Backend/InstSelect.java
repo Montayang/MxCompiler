@@ -15,7 +15,6 @@ import RISCV.Register;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 public class InstSelect implements IRVisitor {
     public ASMFunc curFunc;

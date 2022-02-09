@@ -20,7 +20,7 @@ public class StoreInst extends Instruction {
 
     @Override
     public String toString() {
-        if (source.type.equal("void"))
+        if (source.type == null || source.type.equal("void"))
             return "store " + ((PointerType)dest.type).getObjType() + " null" + ", " + dest.unitOut();
         return "store " + source.unitOut() + ", "+ dest.unitOut();
     }
