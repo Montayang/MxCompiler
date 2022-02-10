@@ -145,32 +145,6 @@ public class IRBuilder implements ASTVisitor {
                 structMap.put(((ClassDefNode) node).className, structType);
             }
         }
-        IRFunction func;
-        func = new IRFunction(new BaseType("void"), new ArrayList<>(), "GLOBAL__sub_I_main_mx");
-        funcMap.put("GLOBAL__sub_I_main_mx", func);
-        //global var
-        curFunc = func;
-        curBlock = func.entryBlk;
-        for (ASTNode node : rootNode.elements) {
-            if (node instanceof VardefStmtNode) {
-                node.accept(this);
-            }
-        }
-        curBlock.addInst(new BrInst(null, curFunc.retBlk, null));
-        curFunc.blkList.add(curFunc.retBlk);
-        //global function
-        for (ASTNode node : rootNode.elements) {
-            if (node instanceof FuncDefNode) {
-                ArrayList<Parameter> parList = new ArrayList<>();
-                if (((FuncDefNode) node).parList != null) {
-                    for (VarDefNode par : ((FuncDefNode) node).parList) {
-                        parList.add(new Parameter(transType(par.varType), par.varName + "_para"));
-                    }
-                }
-                func = new IRFunction(transType(((FuncDefNode)node).funcType), parList, ((FuncDefNode) node).funcName);
-                funcMap.put(((FuncDefNode) node).funcName, func);
-            }
-        }
         //class
         for (ASTNode node : rootNode.elements) {
             if (node instanceof ClassDefNode) {
@@ -196,6 +170,32 @@ public class IRBuilder implements ASTVisitor {
                     BaseType type = funcDef.funcType == null ? new BaseType("void") : transType(funcDef.funcType);
                     funcMap.put(name, new IRFunction(type, parList, name));
                 }
+            }
+        }
+        IRFunction func;
+        func = new IRFunction(new BaseType("void"), new ArrayList<>(), "GLOBAL__sub_I_main_mx");
+        funcMap.put("GLOBAL__sub_I_main_mx", func);
+        //global var
+        curFunc = func;
+        curBlock = func.entryBlk;
+        for (ASTNode node : rootNode.elements) {
+            if (node instanceof VardefStmtNode) {
+                node.accept(this);
+            }
+        }
+        curBlock.addInst(new BrInst(null, curFunc.retBlk, null));
+        curFunc.blkList.add(curFunc.retBlk);
+        //global function
+        for (ASTNode node : rootNode.elements) {
+            if (node instanceof FuncDefNode) {
+                ArrayList<Parameter> parList = new ArrayList<>();
+                if (((FuncDefNode) node).parList != null) {
+                    for (VarDefNode par : ((FuncDefNode) node).parList) {
+                        parList.add(new Parameter(transType(par.varType), par.varName + "_para"));
+                    }
+                }
+                func = new IRFunction(transType(((FuncDefNode)node).funcType), parList, ((FuncDefNode) node).funcName);
+                funcMap.put(((FuncDefNode) node).funcName, func);
             }
         }
         //visit class and func
