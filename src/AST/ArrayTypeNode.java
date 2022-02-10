@@ -29,9 +29,4 @@ public class ArrayTypeNode extends TypeNode {
         if (!(object instanceof ArrayTypeNode)) return false;
         return Objects.equals(Typename, ((TypeNode) object).Typename) && (this.size==((ArrayTypeNode) object).size);
     }
-
-    @Override
-    public BaseType toIRType() {
-        return new PointerType(type.toIRType());
-    }
 }

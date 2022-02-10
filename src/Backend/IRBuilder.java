@@ -193,7 +193,8 @@ public class IRBuilder implements ASTVisitor {
                             parList.add(new Parameter(transType(varDef.varType), varDef.varName + "_para"));
                         }
                     String name = ((ClassDefNode) node).className + "." + funcDef.funcName;
-                    funcMap.put(name, new IRFunction(transType(funcDef.funcType), parList, name));
+                    BaseType type = funcDef.funcType == null ? new BaseType("void") : transType(funcDef.funcType);
+                    funcMap.put(name, new IRFunction(type, parList, name));
                 }
             }
         }
@@ -398,7 +399,7 @@ public class IRBuilder implements ASTVisitor {
 
     @Override
     public void visit(ReturnStmtNode returnStmtNode) {
-        if (!curFunc.retType.equal("void")) {
+        if (returnStmtNode.returnExpr != null) {
             returnStmtNode.returnExpr.accept(this);
             curBlock.addInst(new StoreInst(returnStmtNode.returnExpr.irPar, curFunc.retReg));
         }
@@ -533,18 +534,14 @@ public class IRBuilder implements ASTVisitor {
     @Override
     public void visit(MemberAccExprNode memberAccExprNode) {
         memberAccExprNode.object.accept(this);
-        int cnt = 0, f = 0;
+        int cnt = 0;
         BaseType type = null;
-        for (VardefStmtNode stmt : curClass.varMem) {
-            for (VarDefNode var : stmt.elements) {
-                if (Objects.equals(memberAccExprNode.name, var.varName)) {
-                    f = 1;
-                    type = transType(var.varType);
-                    break;
-                }
-                cnt++;
+        for (Map.Entry<String, TypeNode> var : semantic_scope.classTable.get(memberAccExprNode.object.exprType.Typename).varTable.entrySet()) {
+            if (Objects.equals(memberAccExprNode.name, var.getKey())) {
+                type = transType(var.getValue());
+                break;
             }
-            if (f == 1) break;
+            cnt++;
         }
         assert type != null;
         Parameter class_mem_gep_reg = Register(new PointerType(type), "class_mem_gep_reg");
@@ -564,11 +561,10 @@ public class IRBuilder implements ASTVisitor {
     public void visit(FuncCallExprNode funcCallExprNode) {
         ArrayList<Constant> aryList = new ArrayList<>();
         if (funcCallExprNode.func instanceof IdExprNode) {
-            FuncDefNode funcNode = null;
-            IRFunction irFunc = null;
-            if (curClass != null) {
-                for (FuncDefNode func : curClass.funcMem)
-                    if (Objects.equals(((IdExprNode) funcCallExprNode.func).name, func.funcName)) funcNode = func;
+            FuncDefNode funcNode;
+            IRFunction irFunc;
+            if (curClass != null && semantic_scope.classTable.get(curClass.className).funcTable.containsKey(((IdExprNode) funcCallExprNode.func).name)) {
+                funcNode = semantic_scope.classTable.get(curClass.className).fetchFunc(((IdExprNode) funcCallExprNode.func).name);
                 irFunc = funcMap.get(curClass.className + "." + ((IdExprNode)funcCallExprNode.func).name);
                 if (funcNode != null || irFunc != null) {
                     Parameter Ici = Register(transType(curClass.className), "Implicit_call_inclass");
@@ -756,7 +752,8 @@ public class IRBuilder implements ASTVisitor {
     public void visit(LambdaExprNode lambdaExprNode) {}
 
     public BaseType transType(TypeNode type){
-        if (type instanceof ArrayTypeNode || type.toIRType() != null) return type.toIRType();
+        if (type instanceof ArrayTypeNode) return new PointerType(transType(((ArrayTypeNode) type).type));
+        if (type.toIRType() != null) return type.toIRType();
         return new PointerType(structMap.get(type.Typename));
     }
 
