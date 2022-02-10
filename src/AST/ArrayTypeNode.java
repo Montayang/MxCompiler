@@ -32,8 +32,6 @@ public class ArrayTypeNode extends TypeNode {
 
     @Override
     public BaseType toIRType() {
-        BaseType tmp = type.toIRType();
-        for (int i = 0; i < size; i++) tmp = new PointerType(tmp);
-        return tmp;
+        return new PointerType(type.toIRType());
     }
 }

@@ -26,6 +26,7 @@ public class IRBuilder implements ASTVisitor {
     public Map<String, StructType> structMap = new HashMap<>();
     public Map<String, GlobalVar> glbVarMap = new HashMap<>(), stringMap = new HashMap<>();
     public Stack<BasicBlock> breakStack = new Stack<>(), continueStack = new Stack<>();
+    public Map<String, ArrayList<Integer>> prefixByteMap = new HashMap<>();
 
     public IRBuilder(globalScope scope1) {
         semantic_scope = scope1;
@@ -183,7 +184,7 @@ public class IRBuilder implements ASTVisitor {
                         cnt++;
                     }
                 }
-                ((ClassDefNode) node).prefixByte = structType.byteList;
+                prefixByteMap.put(((ClassDefNode) node).className, structType.byteList);
                 for (FuncDefNode funcDef : ((ClassDefNode) node).funcMem) {
                     ArrayList<Parameter> parList = new ArrayList<>();
                     parList.add(new Parameter(new PointerType(structType), "this"));
@@ -428,17 +429,38 @@ public class IRBuilder implements ASTVisitor {
         }
         Parameter reg = Register(transType(curClass.className), "this_addr");
         curBlock.addInst(new LoadInst(reg, curScope.get("this_addr")));
+        int cnt = 0, f = 0;
+        BaseType type = null;
         for (VardefStmtNode stmt : curClass.varMem) {
             for (VarDefNode var : stmt.elements) {
-
+                if (Objects.equals(idExprNode.name, var.varName)) {
+                    f = 1;
+                    type = transType(var.varType);
+                    break;
+                }
+                cnt++;
             }
+            if (f == 1) break;
         }
-        //TODO
+        ArrayList<Constant> list = new ArrayList<>();
+        list.add(new ConstantValue(0));
+        list.add(new ConstantValue(cnt));
+        assert type != null;
+        Parameter gep_in_id = Register(new PointerType(type), curClass.className + "." + idExprNode.name + "_gep_in_id");
+        GetElementPtrInst inst = new GetElementPtrInst(gep_in_id, reg, list);
+        inst.prefixByte = prefixByteMap.get(curClass.className);
+        curBlock.addInst(inst);
+        curScope.addID(idExprNode.name, gep_in_id);
+        Parameter load_reg = Register(type, curClass.className + "." + idExprNode.name + "_load_reg");
+        curBlock.addInst(new LoadInst(load_reg, gep_in_id));
+        idExprNode.irPar = load_reg;
     }
 
     @Override
     public void visit(ThisExprNode thisExprNode) {
-
+        Parameter Reg = Register(new PointerType(structMap.get(curClass.className)), "thisexpr_reg");
+        curBlock.addInst(new LoadInst(Reg, curScope.get("this_addr")));
+        thisExprNode.irPar = Reg;
     }
 
     @Override
@@ -480,22 +502,60 @@ public class IRBuilder implements ASTVisitor {
     public void visit(NewExprNode newExprNode) {
         if (newExprNode.size == 0) {
             //for class
-            //TODO
+            StructType type = structMap.get(newExprNode.newType.Typename);
+            Parameter class_malloc = Register(new PointerType(new BaseType("i8")), "class_malloc");
+            ArrayList<Constant> list = new ArrayList<>();
+            list.add(new ConstantValue(type.byteNum));
+            curBlock.addInst(new CallInst(class_malloc, list, funcMap.get("_f_malloc")));
+            Parameter class_ptr = Register(new PointerType(type), "class_ptr");
+            curBlock.addInst(new BitCastInst(class_ptr, class_malloc, new PointerType(type)));
+            newExprNode.irPar = class_ptr;
+            IRFunction construct = funcMap.get(newExprNode.newType.Typename + "." + newExprNode.newType.Typename);
+            if (construct != null) {
+                ArrayList<Constant> par = new ArrayList<>();
+                par.add(class_ptr);
+                curBlock.addInst(new CallInst(null, par, construct));
+            }
             return;
         }
-//        ArrayList<Constant> list = new ArrayList<>();
-//        for (ExprNode node : newExprNode.sizeList) {
-//            node.accept(this);
-//            list.add(node.irPar);
-//        }
-//        BaseType type = transType(((ArrayTypeNode) newExprNode.newType).type);
-//        for (int i = 0; i < newExprNode.size; i++) type = new PointerType(type);
-//        newExprNode.irPar = mlcArray(0, list, type);
+        ArrayList<Constant> list = new ArrayList<>();
+        for (ExprNode node : newExprNode.sizeList) {
+            node.accept(this);
+            list.add(node.irPar);
+        }
+        BaseType type = transType(newExprNode.newType);
+        for (int i = 0; i < newExprNode.size; i++) type = new PointerType(type);
+        newExprNode.irPar = mlcArray(0, list, type);
     }
 
     @Override
     public void visit(MemberAccExprNode memberAccExprNode) {
-
+        memberAccExprNode.object.accept(this);
+        int cnt = 0, f = 0;
+        BaseType type = null;
+        for (VardefStmtNode stmt : curClass.varMem) {
+            for (VarDefNode var : stmt.elements) {
+                if (Objects.equals(memberAccExprNode.name, var.varName)) {
+                    f = 1;
+                    type = transType(var.varType);
+                    break;
+                }
+                cnt++;
+            }
+            if (f == 1) break;
+        }
+        assert type != null;
+        Parameter class_mem_gep_reg = Register(new PointerType(type), "class_mem_gep_reg");
+        ArrayList<Constant> par = new ArrayList<>();
+        par.add(new ConstantValue(0));
+        par.add(new ConstantValue(cnt));
+        GetElementPtrInst inst = new GetElementPtrInst(class_mem_gep_reg, memberAccExprNode.object.irPar, par);
+        inst.prefixByte = prefixByteMap.get(memberAccExprNode.exprType.Typename);
+        curBlock.addInst(inst);
+        Parameter load_member = Register(type, "load_member");
+        curBlock.addInst(new LoadInst(load_member, class_mem_gep_reg));
+        memberAccExprNode.irPar = load_member;
+        memberAccExprNode.addr = class_mem_gep_reg;
     }
 
     @Override
@@ -527,17 +587,45 @@ public class IRBuilder implements ASTVisitor {
             curBlock.addInst(new CallInst(reg,aryList,irFunc));
             funcCallExprNode.irPar = reg;
         } else if (funcCallExprNode.func instanceof MemberAccExprNode) {
-            ((MemberAccExprNode) funcCallExprNode.func).object.accept(this);
-            if (((MemberAccExprNode) funcCallExprNode.func).object.exprType instanceof ArrayTypeNode) {
-                //TODO
+            ExprNode Class = ((MemberAccExprNode) funcCallExprNode.func).object;
+            Class.accept(this);
+            if (Class.exprType instanceof ArrayTypeNode) {
+                Parameter bitcast_i32 = Register(new PointerType(new BaseType("i32")), "bitcast_i32");
+                curBlock.addInst(new BitCastInst(bitcast_i32, (Parameter) Class.irPar, new PointerType(new BaseType("i32"))));
+                Parameter gep_size = Register(new PointerType(new BaseType("i32")), "gep_size");
+                ArrayList<Constant> par = new ArrayList<>();
+                par.add(new ConstantValue(-1));
+                curBlock.addInst(new GetElementPtrInst(gep_size, bitcast_i32, par));
+                Parameter size_load = Register(new BaseType("i32"), "size_load");
+                curBlock.addInst(new LoadInst(size_load, gep_size));
+                funcCallExprNode.irPar = size_load;
+                return;
             }
-
+            IRFunction func = Objects.equals(Class.exprType.Typename, "string") ?
+                    funcMap.get("_str_" + ((MemberAccExprNode) funcCallExprNode.func).name) : funcMap.get(Class.exprType.Typename + "." + ((MemberAccExprNode) funcCallExprNode.func).name);
+            aryList.add(Class.irPar);
+            for (ExprNode ary : funcCallExprNode.aryList) {
+                ary.accept(this);
+                aryList.add(ary.irPar);
+            }
+            Parameter reg = func.retType.equal("void") ? null : Register(func.retType, "call_" + Class.exprType.Typename + "_" + ((MemberAccExprNode) funcCallExprNode.func).name);
+            curBlock.addInst(new CallInst(reg, aryList, func));
+            funcCallExprNode.irPar = reg;
         }
     }
 
     @Override
     public void visit(ArrayAccExprNode arrayAccExprNode) {
-
+        arrayAccExprNode.array.accept(this);
+        arrayAccExprNode.index.accept(this);
+        Parameter getelementptr_reg = Register(arrayAccExprNode.array.irPar.type, "getelementptr_reg");
+        ArrayList<Constant> offset = new ArrayList<>();
+        offset.add(arrayAccExprNode.index.irPar);
+        curBlock.addInst(new GetElementPtrInst(getelementptr_reg, arrayAccExprNode.array.irPar, offset));
+        Parameter load_result = Register(((PointerType) arrayAccExprNode.array.irPar.type).getObjType(), "load_result");
+        curBlock.addInst(new LoadInst(load_result, getelementptr_reg));
+        arrayAccExprNode.addr = getelementptr_reg;
+        arrayAccExprNode.irPar = load_result;
     }
 
     @Override
@@ -698,6 +786,56 @@ public class IRBuilder implements ASTVisitor {
     }
 
     public Parameter mlcArray(int dim, ArrayList<Constant> list, BaseType type) {
-        return null;
+        Parameter mul_bytes = Register(new BaseType("i32"), "mul_bytes");
+        curBlock.addInst(new BinaryInst(mul_bytes, list.get(dim), new ConstantValue(((PointerType)type).getObjType().byteNum), "mul"));
+        Parameter sum_bytes = Register(new BaseType("i32"), "sum_bytes");
+        curBlock.addInst(new BinaryInst(sum_bytes, mul_bytes, new ConstantValue(4), "add"));
+        ArrayList<Constant> par = new ArrayList<>();
+        par.add(sum_bytes);
+        Parameter malloca = Register(new PointerType(new BaseType("i8")), "malloca");
+        curBlock.addInst(new CallInst(malloca, par, funcMap.get("_f_malloc")));
+        Parameter array_cast_i8_to_i32 = Register(new PointerType(new BaseType("i32")), "array_cast_i8_to_i32");
+        curBlock.addInst(new BitCastInst(array_cast_i8_to_i32, malloca, new PointerType(new BaseType("i32"))));
+        curBlock.addInst(new StoreInst(list.get(dim), array_cast_i8_to_i32));
+        ArrayList<Constant> offset = new ArrayList<>();
+        offset.add(new ConstantValue(1));
+        Parameter array_tmp_begin_i32 = Register(new PointerType(new BaseType("i32")), "array_tmp_begin_i32");
+        curBlock.addInst(new GetElementPtrInst(array_tmp_begin_i32, array_cast_i8_to_i32, offset));
+        Parameter array_addr = Register(type, "array_addr");
+        curBlock.addInst(new BitCastInst(array_addr, array_tmp_begin_i32, type));
+        if (dim < list.size() - 1) {
+            ArrayList<Constant> tail_offset = new ArrayList<>();
+            tail_offset.add(list.get(dim));
+            Parameter array_tail_addr = Register(new PointerType(type), "array_tail_addr");
+            curBlock.addInst(new GetElementPtrInst(array_tail_addr, array_addr, tail_offset));
+            Parameter current_array_ptr_addr = Register(new PointerType(type), "current_array_ptr_addr");
+            if (curBlock.instList.isEmpty() || !(curBlock.instList.getLast() instanceof BrInst)) curBlock.instList.addFirst(new AllocateInst(type, current_array_ptr_addr));
+            curBlock.addInst(new StoreInst(array_addr, current_array_ptr_addr));
+
+            BasicBlock cond = Block("new_condition"), body = Block("new_loop_body"), end = Block("new_end");
+            curBlock.nxtBlk.add(cond); cond.preBlk.add(curBlock);
+            cond.nxtBlk.add(body); body.preBlk.add(cond);
+            cond.nxtBlk.add(end); end.preBlk.add(cond);
+            body.nxtBlk.add(cond); cond.preBlk.add(body);
+            curBlock.addInst(new BrInst(null, cond, null));
+            curBlock = cond;
+            Parameter load_tmp_current_pointer = Register(type, "load_tmp_current_pointer");
+            curBlock.addInst(new LoadInst(load_tmp_current_pointer, current_array_ptr_addr));
+            Parameter addr_cmp_result = Register(new BaseType("i1"), "addr_cmp_result");
+            curBlock.addInst(new CmpInst(addr_cmp_result, "slt", load_tmp_current_pointer, array_tail_addr));
+            curBlock.addInst(new BrInst(addr_cmp_result, body, end));
+            curBlock = body;
+            Parameter array_addr_head = mlcArray(dim + 1, list, ((PointerType) type).getObjType());
+            curFunc.renameAdd(array_addr_head);
+            curBlock.addInst(new StoreInst(array_addr_head, load_tmp_current_pointer));
+            ArrayList<Constant> nxt_offset = new ArrayList<>();
+            nxt_offset.add(new ConstantValue(1));
+            Parameter nxt_pointer = Register(type, "nxt_pointer");
+            curBlock.addInst(new GetElementPtrInst(nxt_pointer, load_tmp_current_pointer, nxt_offset));
+            curBlock.addInst(new StoreInst(nxt_pointer, current_array_ptr_addr));
+            curBlock.addInst(new BrInst(null, cond, null));
+            curBlock = end;
+        }
+        return array_addr;
     }
 }
