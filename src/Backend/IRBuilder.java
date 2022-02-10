@@ -750,7 +750,9 @@ public class IRBuilder implements ASTVisitor {
     }
 
     @Override
-    public void visit(LambdaExprNode lambdaExprNode) {}
+    public void visit(LambdaExprNode lambdaExprNode) {
+        lambdaExprNode.irPar = new ConstantValue(1);
+    }
 
     public BaseType transType(TypeNode type){
         if (type instanceof ArrayTypeNode) return new PointerType(transType(((ArrayTypeNode) type).type));
