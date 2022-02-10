@@ -188,9 +188,10 @@ public class IRBuilder implements ASTVisitor {
                 for (FuncDefNode funcDef : ((ClassDefNode) node).funcMem) {
                     ArrayList<Parameter> parList = new ArrayList<>();
                     parList.add(new Parameter(new PointerType(structType), "this"));
-                    for (VarDefNode varDef : funcDef.parList) {
-                        parList.add(new Parameter(transType(varDef.varType), varDef.varName + "_para"));
-                    }
+                    if (funcDef.parList != null)
+                        for (VarDefNode varDef : funcDef.parList) {
+                            parList.add(new Parameter(transType(varDef.varType), varDef.varName + "_para"));
+                        }
                     String name = ((ClassDefNode) node).className + "." + funcDef.funcName;
                     funcMap.put(name, new IRFunction(transType(funcDef.funcType), parList, name));
                 }
@@ -551,7 +552,7 @@ public class IRBuilder implements ASTVisitor {
         par.add(new ConstantValue(0));
         par.add(new ConstantValue(cnt));
         GetElementPtrInst inst = new GetElementPtrInst(class_mem_gep_reg, memberAccExprNode.object.irPar, par);
-        inst.prefixByte = prefixByteMap.get(memberAccExprNode.exprType.Typename);
+        inst.prefixByte = prefixByteMap.get(memberAccExprNode.object.exprType.Typename);
         curBlock.addInst(inst);
         Parameter load_member = Register(type, "load_member");
         curBlock.addInst(new LoadInst(load_member, class_mem_gep_reg));
@@ -605,10 +606,11 @@ public class IRBuilder implements ASTVisitor {
             IRFunction func = Objects.equals(Class.exprType.Typename, "string") ?
                     funcMap.get("_str_" + ((MemberAccExprNode) funcCallExprNode.func).name) : funcMap.get(Class.exprType.Typename + "." + ((MemberAccExprNode) funcCallExprNode.func).name);
             aryList.add(Class.irPar);
-            for (ExprNode ary : funcCallExprNode.aryList) {
-                ary.accept(this);
-                aryList.add(ary.irPar);
-            }
+            if (funcCallExprNode.aryList != null)
+                for (ExprNode ary : funcCallExprNode.aryList) {
+                    ary.accept(this);
+                    aryList.add(ary.irPar);
+                }
             Parameter reg = func.retType.equal("void") ? null : Register(func.retType, "call_" + Class.exprType.Typename + "_" + ((MemberAccExprNode) funcCallExprNode.func).name);
             curBlock.addInst(new CallInst(reg, aryList, func));
             funcCallExprNode.irPar = reg;
