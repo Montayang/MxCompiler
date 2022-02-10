@@ -9,6 +9,8 @@ public class StructType extends BaseType {
     public StructType(String name, ArrayList<BaseType> list) {
         super(name);
         varList = list;
+        byteNum = 0;
+        for (BaseType type : varList) byteNum += type.byteNum;
     }
 
     @Override

@@ -216,6 +216,7 @@ public class IRBuilder implements ASTVisitor {
 
     @Override
     public void visit(FuncDefNode funcDefNode) {
+        curScope = new IRScope(curScope);
         curFunc = curClass == null ? funcMap.get(funcDefNode.funcName) : funcMap.get(curClass.className + "." + funcDefNode.funcName);
         curBlock = curFunc.entryBlk;
         if (funcDefNode.parList != null)
