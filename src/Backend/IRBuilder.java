@@ -630,6 +630,7 @@ public class IRBuilder implements ASTVisitor {
     @Override
     public void visit(SelfExprNode selfExprNode) {
         selfExprNode.object.accept(this);
+        selfExprNode.irPar = selfExprNode.object.irPar;
         String op = Objects.equals(selfExprNode.op, "++") ? "add" : "sub";
         Parameter reg = Register(transType("int"), op);
         curBlock.addInst(new BinaryInst(reg, selfExprNode.object.irPar, new ConstantValue(1), op));
@@ -711,7 +712,7 @@ public class IRBuilder implements ASTVisitor {
                     String name = Objects.equals(binaryExprNode.op,"==") ? "_str_eq" : Objects.equals(binaryExprNode.op,"!=") ? "_str_ne" :
                             Objects.equals(binaryExprNode.op,"<") ? "_str_lt" : Objects.equals(binaryExprNode.op,">") ? "_str_gt" :
                                     Objects.equals(binaryExprNode.op,"<=") ? "_str_le" : "_str_ge";
-                    Parameter reg = Register(transType("boll"), "cmp_result" + name);
+                    Parameter reg = Register(transType("bool"), "cmp_result" + name);
                     curBlock.addInst(new CallInst(reg, parList, funcMap.get(name)));
                     binaryExprNode.irPar = reg;
                 }
