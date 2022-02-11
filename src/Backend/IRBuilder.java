@@ -148,11 +148,11 @@ public class IRBuilder implements ASTVisitor {
         //class
         for (ASTNode node : rootNode.elements) {
             if (node instanceof ClassDefNode) {
-                StructType structType = new StructType("class." + ((ClassDefNode) node).className, new ArrayList<>());
+                StructType structType = structMap.get(((ClassDefNode) node).className);
                 int cnt = 0;
                 for (VardefStmtNode varDefStmt : ((ClassDefNode) node).varMem) {
                     for (VarDefNode varDef : varDefStmt.elements) {
-                        structType.varList.add(transType(varDef.varType));
+                        structType.addVar(transType(varDef.varType));
                         if (cnt == 0) structType.byteList.add(0);
                         else structType.byteList.add(structType.byteList.get(cnt - 1) + structType.varList.get(cnt).byteNum);
                         cnt++;
