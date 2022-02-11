@@ -13,9 +13,7 @@ import RISCV.ASMFunc;
 import RISCV.InstRISCV.*;
 import RISCV.Register;
 
-import java.util.HashMap;
-import java.util.ListIterator;
-import java.util.Map;
+import java.util.*;
 
 public class InstSelect implements IRVisitor {
     public ASMFunc curFunc;
@@ -160,10 +158,11 @@ public class InstSelect implements IRVisitor {
             Register rd = transReg(it.retReg);
             if (it.prefixByte.isEmpty()) {
                 int offset = it.indexOffset.get(0).type.byteNum;
-                curBlk.addInst(new LiInstRISCV(new Register("gep_byte", offset), offset));
-                curBlk.addInst(new BinaryInstRISCV("mul", new Register("gep_byte", offset),
-                        transReg(it.indexOffset.get(0)), new Register("change_offset", offset), null));
-                curBlk.addInst(new BinaryInstRISCV("add", transReg(it.sourcePtr), new Register("change_offset", offset), rd, null));
+                Register gep_byte = new Register("gep_byte", offset);
+                Register change_offset = new Register("change_offset", offset);
+                curBlk.addInst(new LiInstRISCV(gep_byte, offset));
+                curBlk.addInst(new BinaryInstRISCV("mul", gep_byte, transReg(it.indexOffset.get(0)), change_offset, null));
+                curBlk.addInst(new BinaryInstRISCV("add", transReg(it.sourcePtr), change_offset, rd, null));
             } else if (it.indexOffset.size() != 1) {
                 int classOffset = ((ConstantValue) it.indexOffset.get(1)).intValue;
                 curBlk.addInst(new BinaryInstRISCV("addi", transReg(it.sourcePtr), null, rd, it.prefixByte.get(classOffset)));
@@ -271,7 +270,7 @@ public class InstSelect implements IRVisitor {
         } else if (obj instanceof Parameter) {
             if (regMap.containsKey(obj)) return regMap.get(obj);
             Register Reg = new Register(((Parameter) obj).parName, obj.type.byteNum);
-            regMap.put((Parameter) obj, Reg);
+            regMap.put(obj, Reg);
             return Reg;
         } else {
             Register Reg = new Register("tmp_str_addrreg", 4);
