@@ -10,7 +10,11 @@ public class StructType extends BaseType {
         super(name);
         varList = list;
         byteNum = 0;
-        for (BaseType type : varList) byteNum += type.byteNum;
+    }
+
+    public void addVar(BaseType var) {
+        varList.add(var);
+        byteNum += var.byteNum;
     }
 
     @Override
