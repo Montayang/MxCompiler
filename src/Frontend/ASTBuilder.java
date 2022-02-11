@@ -286,7 +286,8 @@ public class ASTBuilder extends MxStarBaseVisitor<ASTNode> {
         } else if (ctx.INTERGER_CONST() != null) {
             return new IntConstExprNode(Integer.parseInt(ctx.getText()),new position(ctx));
         } else if (ctx.STRING_CONST() != null) {
-            return new StringConstExprNode(ctx.getText().substring(1,ctx.getText().length()-1)+"\0",new position(ctx));
+            return new StringConstExprNode(ctx.getText().substring(1,ctx.getText().length()-1).replace("\\\\","\\")
+                    .replace("\\n","\n").replace("\\\"","\"").replace("\\t","\t")+"\0",new position(ctx));
         } else if (ctx.BOOL_CONST() != null) {
             boolean value= Objects.equals(ctx.getText(), "true");
             return new BoolConstExprNode(value,new position(ctx));
