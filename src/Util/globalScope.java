@@ -4,14 +4,15 @@ import AST.FuncDefNode;
 import AST.TypeNode;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class globalScope extends Scope{
-    public HashMap<String, FuncDefNode> funcTable;
-    public HashMap<String, globalScope> classTable;
+    public LinkedHashMap<String, FuncDefNode> funcTable;
+    public LinkedHashMap<String, globalScope> classTable;
     public globalScope(Scope parent) {
         super(parent);
-        funcTable=new HashMap<>();
-        classTable=new HashMap<>();
+        funcTable=new LinkedHashMap<>();
+        classTable=new LinkedHashMap<>();
     }
 
     public void defFunction(String id, FuncDefNode func) {
