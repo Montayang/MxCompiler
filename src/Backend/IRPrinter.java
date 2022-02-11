@@ -1,6 +1,7 @@
 package Backend;
 
 import MIR.IRFunction;
+import MIR.IRType.ArrayType;
 import MIR.IRType.PointerType;
 import MIR.IRType.StructType;
 import MIR.Value.BasicBlock.BasicBlock;
@@ -53,8 +54,10 @@ public class IRPrinter implements IRVisitor {
         }
         Print("");
         for (Map.Entry<String, GlobalVar> entry : builder.stringMap.entrySet()) {
-            String out = entry.getKey().replace("\\", "\\5C").replace("\n", "\\0A").replace("\t", "\\09").replace("\"", "\\22").replace("\0", "\\00");
-            Print(entry.getValue().toString() + " = private unnamed_addr constant [" + (entry.getKey().length()) + " x i8] c\"" + out + "\", align 1");
+            String cntSize = entry.getKey().replace("\\0", "1").replace("\\n", "1").replace("\\t", "1").replace("\\\"", "1").replace("\\\\", "1");
+            String out = entry.getKey().replace("\\0", "\\00").replace("\\n", "\\0A").replace("\\t", "\\09").replace("\\\"", "\\22").replace("\\\\", "\\5C");
+            ((ArrayType) ((PointerType) entry.getValue().type).base).len = cntSize.length();
+            Print(entry.getValue().toString() + " = private unnamed_addr constant [" + cntSize.length() + " x i8] c\"" + out + "\", align 1");
         }
         Print("");
         for (Map.Entry<String, IRFunction> entry : builder.exFuncMap.entrySet()) {
