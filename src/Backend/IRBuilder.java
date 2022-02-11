@@ -223,8 +223,9 @@ public class IRBuilder implements ASTVisitor {
         curBlock = curFunc.entryBlk;
         if (funcDefNode.parList != null)
             for (VarDefNode par : funcDefNode.parList) {
-                curScope.addID(par.varName + "_para", Register(transType(par.varType), par.varName));
-                curFunc.parMap.put(par.varName + "_para", Register(transType(par.varType), par.varName));
+                Parameter reg = Register(transType(par.varType), par.varName + "_para");
+                curScope.addID(par.varName + "_para", reg);
+                curFunc.parMap.put(par.varName + "_para", reg);
                 par.accept(this);
                 curBlock.addInst(new StoreInst(curScope.get(par.varName + "_para"), curScope.get(par.varName)));
             }
