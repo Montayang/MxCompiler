@@ -171,6 +171,18 @@ public class IRBuilder implements ASTVisitor {
                     funcMap.put(name, new IRFunction(type, parList, name));
                 }
             }
+        }//global function
+        for (ASTNode node : rootNode.elements) {
+            if (node instanceof FuncDefNode) {
+                ArrayList<Parameter> parList = new ArrayList<>();
+                if (((FuncDefNode) node).parList != null) {
+                    for (VarDefNode par : ((FuncDefNode) node).parList) {
+                        parList.add(new Parameter(transType(par.varType), par.varName + "_para"));
+                    }
+                }
+                IRFunction func = new IRFunction(transType(((FuncDefNode)node).funcType), parList, ((FuncDefNode) node).funcName);
+                funcMap.put(((FuncDefNode) node).funcName, func);
+            }
         }
         IRFunction func;
         func = new IRFunction(new BaseType("void"), new ArrayList<>(), "GLOBAL__sub_I_main_mx");
@@ -185,19 +197,7 @@ public class IRBuilder implements ASTVisitor {
         }
         curBlock.addInst(new BrInst(null, curFunc.retBlk, null));
         curFunc.blkList.add(curFunc.retBlk);
-        //global function
-        for (ASTNode node : rootNode.elements) {
-            if (node instanceof FuncDefNode) {
-                ArrayList<Parameter> parList = new ArrayList<>();
-                if (((FuncDefNode) node).parList != null) {
-                    for (VarDefNode par : ((FuncDefNode) node).parList) {
-                        parList.add(new Parameter(transType(par.varType), par.varName + "_para"));
-                    }
-                }
-                func = new IRFunction(transType(((FuncDefNode)node).funcType), parList, ((FuncDefNode) node).funcName);
-                funcMap.put(((FuncDefNode) node).funcName, func);
-            }
-        }
+
         //visit class and func
         curFunc = null;
         curBlock = null;
@@ -583,7 +583,7 @@ public class IRBuilder implements ASTVisitor {
                 }
             Parameter reg = null;
             assert funcNode != null;
-            if (!irFunc.retType.equal("void")) reg = Register(irFunc.retType, "call_" + funcNode.funcName);
+            if (irFunc.retType != null && !irFunc.retType.equal("void")) reg = Register(irFunc.retType, "call_" + funcNode.funcName);
             curBlock.addInst(new CallInst(reg,aryList,irFunc));
             funcCallExprNode.irPar = reg;
         } else if (funcCallExprNode.func instanceof MemberAccExprNode) {
