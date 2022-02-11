@@ -231,7 +231,7 @@ public class IRBuilder implements ASTVisitor {
             }
         if (curClass != null) {
             //add this
-            Parameter thisAddr = Register(transType(curClass.className), "this_addr");
+            Parameter thisAddr = Register(new PointerType(transType(curClass.className)), "this_addr");
             if (curBlock.instList.isEmpty() || !(curBlock.instList.getLast() instanceof BrInst))
                 curBlock.instList.addFirst(new AllocateInst(((PointerType)thisAddr.type).getObjType(), thisAddr));
             curScope.addID("this_addr", thisAddr);
@@ -570,6 +570,7 @@ public class IRBuilder implements ASTVisitor {
                 if (funcNode != null || irFunc != null) {
                     Parameter Ici = Register(transType(curClass.className), "Implicit_call_inclass");
                     curBlock.addInst(new LoadInst(Ici, curScope.get("this_addr")));
+                    aryList.add(Ici);
                 }
             } else {
                 funcNode = semantic_scope.fetchFunc(((IdExprNode)funcCallExprNode.func).name);
