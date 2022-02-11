@@ -14,6 +14,7 @@ import RISCV.InstRISCV.*;
 import RISCV.Register;
 
 import java.util.HashMap;
+import java.util.ListIterator;
 import java.util.Map;
 
 public class InstSelect implements IRVisitor {
@@ -30,6 +31,7 @@ public class InstSelect implements IRVisitor {
             new Register("s10"), new Register("s11"), new Register("t3"), new Register("t4"), new Register("t5"), new Register("t6")};
     public Map<Constant, Register> regMap = new HashMap<>();
     public Map<BasicBlock, String> labelMap = new HashMap<>();
+    public ListIterator<InstRISCV> iterator;
 
     public InstSelect(IRBuilder builder) {
         funcMap = builder.funcMap;
@@ -40,6 +42,56 @@ public class InstSelect implements IRVisitor {
         for (Map.Entry<String, IRFunction> entry : builder.funcMap.entrySet()) {
             if (builder.exFuncMap.containsKey(entry.getKey())) continue;
             entry.getValue().accept(this);
+        }
+        //Register allocate
+        for (Map.Entry<String, ASMFunc> entry : funcMapASM.entrySet()) {
+            curFunc = entry.getValue();
+            for (ASMBlock blk : curFunc.blkList) {
+                curBlk = blk;
+                iterator = curBlk.instList.listIterator(0);
+                while (iterator.hasNext()) {
+                    InstRISCV inst = iterator.next();
+                    if (inst.rs1 != null && inst.rs1.byteNum != 0) inst.rs1 = alcReg(inst.rs1, reg[28], true);
+                    if (inst.rs2 != null && inst.rs2.byteNum != 0) inst.rs2 = alcReg(inst.rs2, reg[29], true);
+                    if (inst.rd != null && inst.rd.byteNum != 0) inst.rd = alcReg(inst.rd, reg[30], false);
+                }
+            }
+            int offset = curFunc.regOffset;
+            ASMBlock first = curFunc.blkList.get(0), last = curFunc.blkList.size() > 1 ? curFunc.blkList.getLast() : null;
+            if (offset >= -2030 && offset < 2030) {
+                first.instList.addFirst(new BinaryInstRISCV("addi", reg[2], null, reg[8], offset + 12));
+                first.instList.addFirst(new StoreInstRISCV("sw", reg[2], reg[8], offset + 4));
+                first.instList.addFirst(new StoreInstRISCV("sw", reg[2], reg[1], offset + 8));
+                first.instList.addFirst(new BinaryInstRISCV("addi", reg[2], null, reg[2], -(offset + 12)));
+                if (last != null) {
+                    last.addInst(new LoadInstRISCV("lw", reg[2], reg[8], offset + 4));
+                    last.addInst(new LoadInstRISCV("lw", reg[2], reg[1], offset + 8));
+                    last.addInst(new BinaryInstRISCV("addi", reg[2], null, reg[2], offset + 12));
+                    last.addInst(new RetInstRISCV());
+                }
+            } else {
+                first.instList.addFirst(new BinaryInstRISCV("add", reg[18], reg[2], reg[8], null));
+                first.instList.addFirst(new LiInstRISCV(reg[18], offset + 12));
+                first.instList.addFirst(new StoreInstRISCV("sw", reg[18], reg[8], 0));
+                first.instList.addFirst(new BinaryInstRISCV("add", reg[18], reg[2], reg[18], null));
+                first.instList.addFirst(new LiInstRISCV(reg[18], offset + 4));
+                first.instList.addFirst(new StoreInstRISCV("sw", reg[18], reg[1], 0));
+                first.instList.addFirst(new BinaryInstRISCV("add", reg[18], reg[2], reg[18], null));
+                first.instList.addFirst(new LiInstRISCV(reg[18], offset + 8));
+                first.instList.addFirst(new BinaryInstRISCV("add", reg[18], reg[2], reg[2], null));
+                first.instList.addFirst(new LiInstRISCV(reg[18], -(offset + 12)));
+                if (last != null) {
+                    last.addInst(new LiInstRISCV(reg[18], offset + 4));
+                    last.addInst(new BinaryInstRISCV("add", reg[18], reg[2], reg[18], null));
+                    last.addInst(new LoadInstRISCV("lw", reg[18], reg[8], 0));
+                    last.addInst(new LiInstRISCV(reg[18], offset + 8));
+                    last.addInst(new BinaryInstRISCV("add", reg[18], reg[2], reg[18], null));
+                    last.addInst(new LoadInstRISCV("lw", reg[18], reg[1], 0));
+                    last.addInst(new LiInstRISCV(reg[18], offset + 12));
+                    last.addInst(new BinaryInstRISCV("add", reg[18], reg[2], reg[2], null));
+                    last.addInst(new RetInstRISCV());
+                }
+            }
         }
     }
 
@@ -158,8 +210,9 @@ public class InstSelect implements IRVisitor {
     public void visit(StoreInst it) {
         String op = it.source.type.byteNum == 1 ? "sb" : it.source.type.byteNum == 2 ? "sh" : "sw";
         if (it.dest instanceof GlobalVar) {
-            curBlk.addInst(new LaInstRISCV(((GlobalVar) it.dest).varName, new Register("la", 4)));
-            curBlk.addInst(new StoreInstRISCV("sw", new Register("la", 4), transReg(it.source), 0));
+            Register la = new Register("la", 4);
+            curBlk.addInst(new LaInstRISCV(((GlobalVar) it.dest).varName, la));
+            curBlk.addInst(new StoreInstRISCV("sw", la, transReg(it.source), 0));
         } else {
             Register rs1 = transReg(it.dest), rs2 = transReg(it.source);
             if (curFunc.offsetMap.containsKey(rs1)) {
@@ -205,42 +258,6 @@ public class InstSelect implements IRVisitor {
             curBlk = curFunc.blkList.get(i);
             it.blkList.get(i).accept(this);
         }
-        int offset = curFunc.regOffset;
-        ASMBlock first = curFunc.blkList.get(0), last = curFunc.blkList.size() > 1 ? curFunc.blkList.getLast() : null;
-        if (offset >= -2030 && offset < 2030) {
-            first.instList.addFirst(new BinaryInstRISCV("addi", reg[2], null, reg[8], offset + 12));
-            first.instList.addFirst(new StoreInstRISCV("sw", reg[2], reg[8], offset + 4));
-            first.instList.addFirst(new StoreInstRISCV("sw", reg[2], reg[1], offset + 8));
-            first.instList.addFirst(new BinaryInstRISCV("addi", reg[2], null, reg[2], -(offset + 12)));
-            if (last != null) {
-                last.addInst(new LoadInstRISCV("lw", reg[2], reg[8], offset + 4));
-                last.addInst(new LoadInstRISCV("lw", reg[2], reg[1], offset + 8));
-                last.addInst(new BinaryInstRISCV("addi", reg[2], null, reg[2], offset + 12));
-                last.addInst(new RetInstRISCV());
-            }
-        } else {
-            first.instList.addFirst(new BinaryInstRISCV("add", reg[18], reg[2], reg[8], null));
-            first.instList.addFirst(new LiInstRISCV(reg[18], offset + 12));
-            first.instList.addFirst(new StoreInstRISCV("sw", reg[18], reg[8], 0));
-            first.instList.addFirst(new BinaryInstRISCV("add", reg[18], reg[2], reg[18], null));
-            first.instList.addFirst(new LiInstRISCV(reg[18], offset + 4));
-            first.instList.addFirst(new StoreInstRISCV("sw", reg[18], reg[1], 0));
-            first.instList.addFirst(new BinaryInstRISCV("add", reg[18], reg[2], reg[18], null));
-            first.instList.addFirst(new LiInstRISCV(reg[18], offset + 8));
-            first.instList.addFirst(new BinaryInstRISCV("add", reg[18], reg[2], reg[2], null));
-            first.instList.addFirst(new LiInstRISCV(reg[18], -(offset + 12)));
-            if (last != null) {
-                last.addInst(new LiInstRISCV(reg[18], offset + 4));
-                last.addInst(new BinaryInstRISCV("add", reg[18], reg[2], reg[18], null));
-                last.addInst(new LoadInstRISCV("lw", reg[18], reg[8], 0));
-                last.addInst(new LiInstRISCV(reg[18], offset + 8));
-                last.addInst(new BinaryInstRISCV("add", reg[18], reg[2], reg[18], null));
-                last.addInst(new LoadInstRISCV("lw", reg[18], reg[1], 0));
-                last.addInst(new LiInstRISCV(reg[18], offset + 12));
-                last.addInst(new BinaryInstRISCV("add", reg[18], reg[2], reg[2], null));
-                last.addInst(new RetInstRISCV());
-            }
-        }
     }
 
     public Register transReg(Constant obj) {
@@ -261,5 +278,34 @@ public class InstSelect implements IRVisitor {
             curBlk.addInst(new LaInstRISCV(stringMap.get(((ConstantValue) ((GlobalVar) obj).init).stringValue).varName, Reg));
             return Reg;
         }
+    }
+
+    public Register alcReg(Register source, Register result, boolean f) {
+        if (!curFunc.offsetMap.containsKey(source)) {
+            curFunc.regOffset += source.byteNum;
+            curFunc.offsetMap.put(source, curFunc.regOffset);
+        }
+        int imm = -curFunc.offsetMap.get(source);
+        if (imm >= -2048 && imm < 2048) {
+            if (f) {
+                iterator.previous();
+                iterator.add(new LoadInstRISCV(source.byteNum == 1 ? "lb" : source.byteNum == 2 ? "lh" : "lw", reg[8], result, imm));
+                iterator.next();
+            }
+            else iterator.add(new StoreInstRISCV(source.byteNum == 1 ? "sb" : source.byteNum == 2 ? "sh" : "sw", reg[8], result, imm));
+        } else {
+            if (f) {
+                iterator.previous();
+                iterator.add(new LiInstRISCV(reg[31], imm));
+                iterator.add(new BinaryInstRISCV("add", reg[8], reg[31], reg[31], null));
+                iterator.add(new LoadInstRISCV(source.byteNum == 1 ? "lb" : source.byteNum == 2 ? "lh" : "lw", reg[31], result, 0));
+                iterator.next();
+            } else {
+                iterator.add(new LiInstRISCV(reg[31], imm));
+                iterator.add(new BinaryInstRISCV("add", reg[8], reg[31], reg[31], null));
+                iterator.add(new StoreInstRISCV(source.byteNum == 1 ? "sb" : source.byteNum == 2 ? "sh" : "sw", reg[31], result, 0));
+            }
+        }
+        return result;
     }
 }
