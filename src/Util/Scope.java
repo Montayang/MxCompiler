@@ -3,13 +3,15 @@ package Util;
 import AST.TypeNode;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 public class Scope {
-    public HashMap<String, TypeNode> varTable;
+    public LinkedHashMap<String, TypeNode> varTable;
     public Scope parent;
 
     public Scope(Scope parent) {
-        varTable = new HashMap<>();
+        varTable = new LinkedHashMap<>();
         this.parent=parent;
     }
 
